@@ -20,7 +20,7 @@ export default {
                 'blue-sky': '#41C9E2',
                 'blue-light': '#ACE2E1',
                 'blue-lighter': '#F3FAFB',
-                'blue-dark': '177AAF',
+                'blue-dark': '#177AAF',
             }
         },
     },
