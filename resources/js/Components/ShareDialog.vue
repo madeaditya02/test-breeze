@@ -34,7 +34,8 @@ function search(event) {
       <div>
         <span class="font-medium block mb-2">Invite Member</span>
         <InputGroup>
-          <AutoComplete v-model="selectedUser" optionLabel="username" :suggestions="filteredUsers" @complete="search">
+          <AutoComplete v-model="selectedUser" optionLabel="username" :suggestions="filteredUsers" @complete="search"
+            class="focus:!border-blue-primary">
             <template #option="slotProps">
               <div class="flex items-center gap-2">
                 <img :src="`https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png`" style="width: 32px" />
@@ -45,7 +46,7 @@ function search(event) {
               </div>
             </template>
           </AutoComplete>
-          <Button label="Invite"></Button>
+          <Button label="Invite" class=""></Button>
         </InputGroup>
       </div>
       <div>

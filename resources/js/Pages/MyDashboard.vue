@@ -1,17 +1,17 @@
 <script setup>
 import { ref, watch } from "vue";
+import DashboardLayout from '../Layouts/DashboardLayout.vue';
+import CurrentPlans from "@/Components/CurrentPlans.vue";
+import DestinationCard from "@/Components/DestinationCard.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Dialog from "primevue/dialog";
+import DatePicker from "primevue/datepicker";
+import ShareDialog from "@/Components/ShareDialog.vue";
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import DashboardLayout from '../Layouts/DashboardLayout.vue';
-import CurrentPlanCard from "@/Components/CurrentPlanCard.vue";
-import DestinationCard from "@/Components/DestinationCard.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import PButton from "primevue/button";
-import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
-import DatePicker from "primevue/datepicker";
-import ShareDialog from "@/Components/ShareDialog.vue";
+import PlusButton from "@/Components/PlusButton.vue";
+
 defineOptions({ layout: DashboardLayout });
 const showModal = ref(false);
 const selectedPlan = ref(null);
@@ -32,23 +32,12 @@ const showShare = ref(false)
 </script>
 <template>
   <h1 class="text-3xl font-semibold mb-5">My Plans</h1>
-  <PrimaryButton class="mb-5">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff"
-      class="size-5">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
+  <PlusButton class="mb-5" @click="showNewPlanModal = true">
     Add New Plan
-  </PrimaryButton>
-  <div class="current-plan">
-    <swiper :slidesPerView="'auto'" :spaceBetween="30" :pagination="{
-      clickable: true,
-    }">
-      <swiper-slide v-for="i in 7">
-        <current-plan-card @share-plan="showShare = true" />
-      </swiper-slide>
-      <swiper-slide></swiper-slide>
-    </swiper>
-  </div>
+  </PlusButton>
+
+  <CurrentPlans @share-plan="showShare = true" />
+
   <h1 class="text-3xl font-semibold mb-5 mt-12">Recommended for You</h1>
   <div class="inline-flex mb-3 gap-3 items-center px-3 py-2 rounded-lg border text-[rgba(0,0,0,0.5)] text-base">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-[20px] fill-[rgba(0,0,0,0.5)]">
@@ -137,13 +126,7 @@ const showShare = ref(false)
           <DatePicker v-model="rangePlan[1]" :min-date="(new Date())" :manual-input="false" placeholder="mm/dd/yyyy">
           </DatePicker>
         </div>
-        <PrimaryButton>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff"
-            class="size-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Add New Plan
-        </PrimaryButton>
+        <PlusButton>Add Plan</PlusButton>
       </div>
     </template>
   </Dialog>
@@ -151,19 +134,6 @@ const showShare = ref(false)
   <ShareDialog v-model:visible="showShare" />
 </template>
 <style>
-.swiper {
-  width: 100%;
-  height: auto;
-}
-
-.current-plan .swiper-slide {
-  width: 80%;
-}
-
-.current-plan .swiper-slide:last-child {
-  width: calc(20% - 30px);
-}
-
 .recommendations .swiper-slide {
   width: 35%;
 }

@@ -17,9 +17,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('MyDashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
@@ -37,6 +35,16 @@ Route::middleware('auth')->group(function () {
         $plan->load('activities');
         return Inertia::render('OnlineRoom', ['plan' => $plan]);
     });
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('MyDashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/dashboard/plans', function () {
+        return Inertia::render('Plans');
+    })->middleware(['auth', 'verified'])->name('plans');
+    Route::get('/dashboard/plans/{id}', function () {
+        return Inertia::render('Plan');
+    })->middleware(['auth', 'verified'])->name('plans');
 });
 
 Route::resource('/activities', ActivityController::class);

@@ -10,9 +10,36 @@ import PrimeVue from "primevue/config";
 import ToastService from 'primevue/toastservice';
 import Aura from '@primevue/themes/aura';
 import theme from 'tailwindcss/defaultTheme';
+import { definePreset } from '@primevue/themes';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+const MyPreset = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50: '{sky.50}',
+            100: '{sky.100}',
+            200: '{sky.200}',
+            300: '{sky.300}',
+            400: '{sky.400}',
+            500: '#1FA1E9',
+            600: '{sky.600}',
+            700: '{sky.700}',
+            800: '{sky.800}',
+            900: '{sky.900}',
+            950: '{sky.950}'
+        }
+    },
+    components: {
+        rating: {
+            icon: {
+                hover: {color: '#facc15'},
+                active: {color: '#facc15'},
+            }
+        }
+    }
+})
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -23,7 +50,7 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(PrimeVue, {
                 theme: {
-                    preset: Aura
+                    preset: MyPreset
                 }
             })
             .use(ToastService)
