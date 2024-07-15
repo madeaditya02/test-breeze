@@ -9,13 +9,17 @@ import ShareIconButton from '@/Components/ShareIconButton.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import DatePicker from 'primevue/datepicker';
 import Rating from 'primevue/rating';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 defineOptions({ layout: DashboardLayout });
 
 const showAddPlan = ref(false);
 const rating = ref(null);
 const showShare = ref(false);
+const timePlan = ref();
+watch(showAddPlan, () => {
+  timePlan.value = null
+})
 </script>
 <template>
   <div class="flex justify-between">
