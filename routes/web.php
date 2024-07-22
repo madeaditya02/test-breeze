@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\PlaceController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Events\OnlineStatus;
@@ -53,6 +55,7 @@ Route::middleware('auth')->group(function () {
     })->middleware(['auth', 'verified'])->name('invittions');
 });
 
+Route::get('/search/{search}', [PlaceController::class, 'search']);
 Route::resource('/activities', ActivityController::class);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
