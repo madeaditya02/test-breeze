@@ -1,5 +1,6 @@
 <script setup>
 import CurrentPlans from '@/Components/CurrentPlans.vue';
+import NewPlanModal from '@/Components/NewPlanModal.vue';
 import PlanCard from '@/Components/PlanCard.vue';
 import PlusButton from '@/Components/PlusButton.vue';
 import ShareDialog from '@/Components/ShareDialog.vue';
@@ -23,4 +24,5 @@ const showShare = ref(false)
   </div>
 
   <ShareDialog v-model:visible="showShare" />
+  <NewPlanModal v-model:show="showNewPlanModal" />
 </template>

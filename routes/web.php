@@ -48,6 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/plans/{id}', function () {
         return Inertia::render('Plan');
     })->middleware(['auth', 'verified'])->name('plans');
+    Route::get('/dashboard/invitations', function () {
+        return Inertia::render('Invitations');
+    })->middleware(['auth', 'verified'])->name('invittions');
 });
 
 Route::resource('/activities', ActivityController::class);
