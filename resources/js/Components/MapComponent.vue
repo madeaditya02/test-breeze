@@ -15,7 +15,7 @@ export default {
 
     const initMap = async () => {
       const loader = new Loader({
-        apiKey: 'AIzaSyBbp8Cy9X23xQMEwmYJR1TsrsWVtWNDNMw',
+        apiKey: import.meta.env.VITE_MAPS_API_KEY,
         // libraries: ['maps'],
       });
 
