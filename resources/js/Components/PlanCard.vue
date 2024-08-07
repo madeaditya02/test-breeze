@@ -10,13 +10,13 @@ defineEmits(['sharePlan']);
 
 </script>
 <template>
-  <div class="px-6 py-5 border rounded-xl flex justify-between">
+  <div class="px-6 py-5 border rounded-xl flex justify-between flex-col md:flex-row">
     <div>
       <div class="flex items-center gap-4">
-        <h2 class="text-2xl font-medium">Trip to Bali</h2>
+        <h2 class="text-2xl font-medium">Trip to Raja Ampat</h2>
         <StatusBadge status="Upcoming" />
       </div>
-      <div class="flex items-center gap-4 mt-4">
+      <div class="flex md:items-center gap-4 mt-4 flex-col md:flex-row">
         <div class="flex gap-3 items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
@@ -50,7 +50,7 @@ defineEmits(['sharePlan']);
       </div>
     </div>
     <div class="text-right">
-      <div class="flex gap-3">
+      <div class="flex gap-3 pt-2 border-t mt-3 md:pt-0 md:border-0 md:mt-0">
         <pencil-square-icon-button />
         <share-icon-button @share="$emit('sharePlan')" />
         <FavoriteButton />

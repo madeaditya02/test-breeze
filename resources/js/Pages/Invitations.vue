@@ -6,8 +6,10 @@ defineOptions({ layout: DashboardLayout });
 </script>
 <template>
   <h1 class="text-3xl font-semibold mb-5">Invitations</h1>
-  <div class="mt-4 px-6 py-5 flex justify-between items-center w-full border rounded-xl" v-for="i in 3">
-    <div class="flex gap-12 items-center">
+  <div
+    class="mt-4 px-6 py-5 flex md:justify-between md:items-center w-full border rounded-xl flex-col md:flex-row gap-y-3"
+    v-for="i in 3">
+    <div class="flex gap-1 sm:gap-6 lg:gap-12 md:items-center flex-col md:flex-row">
       <h3 class="text-xl font-semibold">Wahyu Pranata</h3>
       <div>
         <div>Wahyu Pranata invites you to collaborate in <span class="font=-semibold">Trip to Bali</span></div>
@@ -21,6 +23,6 @@ defineOptions({ layout: DashboardLayout });
         </div>
       </div>
     </div>
-    <PlusButton>Accept</PlusButton>
+    <PlusButton class="w-fit">Accept</PlusButton>
   </div>
 </template>

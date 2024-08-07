@@ -53,7 +53,7 @@ const showShare = ref(false)
     <span>Landmark</span>
   </div>
   <div class="recommendations">
-    <swiper :slidesPerView="'auto'" :spaceBetween="30" :pagination="{
+    <swiper :slidesPerView="'auto'" :spaceBetween="10" :pagination="{
       clickable: true,
     }">
       <swiper-slide v-for="i in 7">
@@ -71,6 +71,13 @@ const showShare = ref(false)
 .recommendations .swiper-slide {
   width: 35%;
 }
+
+@media (max-width: 640px) {
+  .recommendations .swiper-slide {
+    width: 85%;
+  }
+}
+
 
 .p-datepicker-input {
   padding: 4px 12px !important;

@@ -21,8 +21,10 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@googlemaps/js-api-loader": "^1.16.6",
         "@primevue/themes": "^4.0.0",
         "primevue": "^4.0.0",
-        "swiper": "^11.1.4"
+        "swiper": "^11.1.4",
+        "vue-advanced-cropper": "^2.8.9"
     }
 }
