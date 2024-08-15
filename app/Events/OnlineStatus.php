@@ -30,7 +30,7 @@ class OnlineStatus
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('chat.'.$this->roomId),
+            new PresenceChannel('plan.'.$this->roomId),
         ];
     }
 }

@@ -3,22 +3,28 @@ import { Link, router, usePage } from '@inertiajs/vue3';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
 import Popover from 'primevue/popover';
-import { ref } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 
-// const page = usePage();
+const page = usePage();
+const loggedUser = page.props.auth.user;
+const showNavbar = ref(false)
 // console.log(page.props);
 const toast = useToast();
-router.on('success', (event) => {
-  const page = usePage();
-  const alert = page.props.alert
-  console.log(page.props);
-  if (alert) {
-    toast.add({ severity: alert[0], summary: alert[1], detail: alert[2], life: 4000 });
-  }
-})
-
+onUnmounted(
+  router.on('success', (event) => {
+    console.log('Pindah page');
+    const page = usePage();
+    const alert = page.props.alert
+    // console.log(alert);
+    // console.log(page.props);
+    if (alert) {
+      toast.add({ severity: alert[0], summary: alert[1], detail: alert[2], life: 4000 });
+    }
+    showNavbar.value = false
+  })
+)
 
 const userMenu = ref();
 function toggleUserMenu(event) {
@@ -50,17 +56,15 @@ const confirmLogout = () => {
   });
 };
 
-const showNavbar = ref(false)
 </script>
 <template>
-  <Toast />
   <ConfirmDialog />
   <nav
     class="w-[320px] max-w-[calc(100%-80px)] bg-blue-lighter px-8 py-10 fixed left-0 top-0 bottom-0 z-30 transition-all duration-200"
     :class="showNavbar ? 'ml-0' : '-ml-[320px] lg:ml-0'">
     <div class="flex gap-3 items-center mb-9 cursor-pointer" @click="toggleUserMenu">
-      <img src="/img/profil.jpg" alt="" class="w-[32px] h-[32px] rounded-full">
-      <div>mdadityaa</div>
+      <img :src="loggedUser.profile_picture" alt="" class="w-[32px] h-[32px] rounded-full">
+      <div>{{ loggedUser.name }}</div>
     </div>
     <Popover ref="userMenu">
       <div class="w-56">
@@ -150,6 +154,7 @@ const showNavbar = ref(false)
       <slot />
     </div>
   </div>
+  <Toast />
 </template>
 <style>
 .p-popover-content {

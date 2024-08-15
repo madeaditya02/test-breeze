@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('plan_user', function (Blueprint $table) {
             $table->id();
-            $table->string('activity');
+            $table->unsignedBigInteger('user_id');
             $table->string('plan_id');
-            $table->datetime('time');
+            $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
-            $table->foreign('plan_id')->references('id')->on('plans');
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('plan_user');
     }
 };

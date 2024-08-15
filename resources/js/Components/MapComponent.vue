@@ -9,8 +9,9 @@ import { ref, onMounted, defineProps } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 
 export default {
+  props: ['class'],
   setup() {
-    defineProps(['class']);
+    // defineProps(['class']);
     const mapRef = ref(null);
 
     const initMap = async () => {
@@ -71,7 +72,7 @@ export default {
         avoidTolls: false,
       };
       service.getDistanceMatrix(requestDistance).then((response) => {
-        console.log(response);
+        // console.log(response);
       });
     };
 

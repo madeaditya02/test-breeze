@@ -19,32 +19,48 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $user1 = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'profile_picture' => 'https://ui-avatars.com/api/?name=Test+User'
         ]);
-        User::factory()->create([
+        $user2 = User::factory()->create([
             'name' => 'Made Aditya',
             'email' => 'imadeaditya4@gmail.com',
+            'profile_picture' => 'https://ui-avatars.com/api/?name=Made+Aditya'
         ]);
-        User::factory()->create([
-            'name' => 'Made Aditya 2',
-            'email' => 'madeadityaclone02@gmail.com',
+        $user3 = User::factory()->create([
+            'name' => 'Wahyu Pranata',
+            'email' => 'wahyupranata@gmail.com',
+            'profile_picture' => 'https://ui-avatars.com/api/?name=Wahyu+Pranata'
         ]);
+        $user4 = User::factory()->create([
+            'name' => 'Kadek Chandra',
+            'email' => 'kadekchandra@gmail.com',
+            'profile_picture' => 'https://ui-avatars.com/api/?name=Kadek+Chandra'
+        ]);
+        $user4 = User::factory()->create([
+            'name' => 'Bisma Yoga',
+            'email' => 'bismayoga@gmail.com',
+            'profile_picture' => 'https://ui-avatars.com/api/?name=Bisma+Yoga'
+        ]);
+        $id1 = Str::random(6);
         $plan1 = Plan::create([
-            'id' => Str::random(6),
+            'id' => $id1,
             'name' => 'Trip to Bali'
         ]);
+        $plan1->users()->attach($user2->id, ['accepted_at' => now()]);
+        // $plan1->users()->attach($user3->id);
         $plan2 = Plan::create([
             'id' => Str::random(6),
             'name' => 'Trip to Raja Ampat'
         ]);
         $plan1->activities()->createMany([
-            ['activity' => 'Ke Pantai Sanur'],
-            ['activity' => 'Ke Pantai Jimbaran']
+            ['activity' => 'Ke Pantai Sanur', 'time' => now()->addHours(2)->toDateTimeString()],
+            ['activity' => 'Ke Pantai Jimbaran', 'time' => now()->addHours(2)->toDateTimeString()]
         ]);
         $plan2->activities()->createMany([
-            ['activity' => 'Ke Raja Ampat'],
+            ['activity' => 'Ke Raja Ampat', 'time' => now()->addHours(2)->toDateTimeString()],
         ]);
     }
 }

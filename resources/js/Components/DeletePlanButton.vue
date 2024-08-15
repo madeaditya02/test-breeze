@@ -1,8 +1,8 @@
 <script setup>
-defineEmits(['favorite'])
+defineEmits(['delete'])
 </script>
 <template>
-  <button @click="$emit('favorite')"
+  <button @click="$emit('delete')"
     class="w-[36px] h-[36px] flex justify-center items-center p-1.5 hover:bg-gray-100 rounded-lg">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
       class="size-6">

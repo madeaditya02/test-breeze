@@ -52,4 +52,8 @@ class UserController extends Controller
             return redirect('/')->with('alert', ['success', 'Delete Account', 'Your account has been deleted permanently']);
         }
     }
+    public function searchUsers(Request $request)
+    {
+        return User::all(['id', 'name', 'email', 'profile_picture']);
+    }
 }

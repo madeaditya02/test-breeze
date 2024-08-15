@@ -4,64 +4,71 @@ import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import AutoComplete from "primevue/autocomplete";
 import InputGroup from "primevue/inputgroup";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+const props = defineProps(['plan', 'onlineUsers'])
 const visible = defineModel('visible')
-const users = ref([
-  {
-    name: 'Made Aditya',
-    username: 'mdadityaa',
-  },
-  {
-    name: 'Wahyu Pranata',
-    username: 'yupranataa',
-  },
-  {
-    name: 'Kadek Chandra',
-    username: 'kadekchandra',
-  }
-])
-const filteredUsers = ref([])
-const selectedUser = ref('')
-function search(event) {
-  // filteredUsers.value = users.value
-  filteredUsers.value = users.value.filter(user => user.name.toLowerCase().includes(event.query.toLowerCase()))
+const users = ref([])
+onMounted(async () => {
+  users.value = (await axios.post('/search-users', {})).data
   // console.log(users.value);
+})
+const filteredUsers = ref([])
+const selectedUser = ref(null)
+function search(event) {
+  filteredUsers.value = users.value.filter(user => user.name.toLowerCase().includes(event.query.toLowerCase()))
 }
+const toast = useToast();
+async function inviteUser() {
+  // console.log(selectedUser.value);
+  const res = await axios.post(`/dashboard/plans/${props.plan.id}/invite`, { user: selectedUser.value.id });
+  if (res.status == 200)
+    toast.add({ severity: 'success', summary: 'Invite Friend', detail: 'Invitation successfully sended', life: 4000 });
+  selectedUser.value = null
+  // console.log(res);
+}
+const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
 </script>
 <template>
+  <Toast />
   <Dialog v-model:visible="visible" modal header="Invite Friends" :style="{ width: '32rem' }">
     <div class="flex flex-col gap-4 w-full">
       <div>
         <span class="font-medium block mb-2">Invite Member</span>
         <InputGroup>
-          <AutoComplete v-model="selectedUser" optionLabel="username" :suggestions="filteredUsers" @complete="search"
+          <AutoComplete v-model="selectedUser" optionLabel="email" :suggestions="filteredUsers" @complete="search"
             class="focus:!border-blue-primary">
             <template #option="slotProps">
               <div class="flex items-center gap-2">
-                <img :src="`https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png`" style="width: 32px" />
+                <img :src="slotProps.option.profile_picture" class="w-8 h-8 rounded-full" />
                 <div>
                   <span class="font-medium">{{ slotProps.option.name }}</span>
-                  <div class="text-sm text-surface-500 dark:text-surface-400">{{ slotProps.option.username }}</div>
+                  <div class="text-sm text-surface-500 dark:text-surface-400">{{ slotProps.option.email }}</div>
                 </div>
               </div>
             </template>
           </AutoComplete>
-          <Button label="Invite" class=""></Button>
+          <Button label="Invite" class="" @click="inviteUser"></Button>
         </InputGroup>
       </div>
       <div>
         <span class="font-medium block mb-2">Team Members</span>
         <ul class="list-none p-0 m-0 flex flex-col gap-4">
-          <li v-for="i in 3" :key="i" class="flex items-center gap-2">
-            <img :src="`https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png`" style="width: 32px" />
-            <div>
-              <span class="font-medium">Made Aditya</span>
-              <div class="text-sm text-surface-500 dark:text-surface-400">mdadityaa</div>
+          <li v-for="user in plan.users" :key="user.id" class="flex items-center gap-2 justify-between">
+            <div class="flex items-center gap-2">
+              <img :src="user.profile_picture" style="width: 32px" class="rounded-full" />
+              <div>
+                <span class="font-medium">{{ user.name }}</span>
+                <div class="text-sm text-surface-500 dark:text-surface-400">{{ user.email }}</div>
+              </div>
+              <!-- <div class="flex items-center gap-2 text-surface-500 dark:text-surface-400 ml-auto text-sm">
+                          <span>{{ member.role }}</span>
+                          <i class="pi pi-angle-down"></i>
+                      </div> -->
             </div>
-            <!-- <div class="flex items-center gap-2 text-surface-500 dark:text-surface-400 ml-auto text-sm">
-                        <span>{{ member.role }}</span>
-                        <i class="pi pi-angle-down"></i>
-                    </div> -->
+            <span v-if="onlineUsers.includes(user.id)" class="text-green-600">Online</span>
           </li>
         </ul>
       </div>

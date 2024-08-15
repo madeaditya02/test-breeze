@@ -8,6 +8,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import { ref } from 'vue';
 
 defineOptions({ layout: DashboardLayout });
+const props = defineProps(['plans'])
 const showNewPlanModal = ref(false)
 const showShare = ref(false)
 </script>
@@ -20,7 +21,7 @@ const showShare = ref(false)
     Add New Plan
   </PlusButton>
   <div class="flex flex-col gap-5">
-    <PlanCard v-for="i in 3" @share-plan="showShare = true" />
+    <PlanCard v-for="plan in plans" @share-plan="showShare = true" :plan="plan" />
   </div>
 
   <ShareDialog v-model:visible="showShare" />

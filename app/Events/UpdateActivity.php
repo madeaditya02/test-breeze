@@ -35,7 +35,7 @@ class UpdateActivity implements ShouldBroadcastNow
         // error_log($this->activities[0]['plan_id']);
         return [
             // new Channel('activities.'.$this->plan_id),
-            new PresenceChannel('chat.'.$this->plan_id),
+            new PresenceChannel('plan.'.$this->plan_id),
         ];
     }
 }

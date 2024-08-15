@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
 use App\Models\Activity;
+use Illuminate\Http\Request;
 use App\Events\UpdateActivity;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ActivityController extends Controller
 {
@@ -28,12 +30,16 @@ class ActivityController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Plan $plan, Request $request)
     {
+        if (!Gate::allows('edit-plan', $plan)) {
+            abort(403);
+        }
         $data = $request->input('data');
+        $data['plan_id'] = $plan->id;
         $activities = $request->input('activities');
         array_push($activities, Activity::create($data));
-        broadcast(new UpdateActivity($activities, $data['plan_id']))->toOthers();
+        broadcast(new UpdateActivity($activities, $plan->id))->toOthers();
         // UpdateActivity::dispatch($activities, $data['plan_id']);
         return response()->json($activities);
     }
@@ -65,11 +71,14 @@ class ActivityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activity $activity, Request $request)
+    public function destroy(Plan $plan, Activity $activity, Request $request)
     {
+        if (!Gate::allows('edit-plan', $plan)) {
+            abort(403);
+        }
         $data = $request->all();
         $activity->delete();
-        broadcast(new UpdateActivity($data['activities'], $data['plan_id']))->toOthers();
+        broadcast(new UpdateActivity($data['activities'], $plan->id))->toOthers();
         return response()->json($data['activities']);
     }
 }

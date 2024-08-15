@@ -19,4 +19,11 @@ class Activity extends Model
     {
         return $this->belongsTo(Plan::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'time' => 'datetime',
+        ];
+    }
 }

@@ -48,11 +48,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::get('/dashboard/explore', [PlaceController::class, 'explore'])->name('explore');
     Route::get('/dashboard/plans', [PlanController::class, 'index'])->name('plans');
-    Route::get('/dashboard/plans/{id}', [PlanController::class, 'show'])->name('plans');
+    Route::get('/dashboard/plans/{plan:id}', [PlanController::class, 'show'])->name('plan');
+    Route::get('/dashboard/plans/{plan:id}/join', [PlanController::class, 'join'])->name('join-plan');
+    Route::post('/dashboard/plans/{plan:id}/invite', [PlanController::class, 'invite'])->name('invite-plan');
     Route::get('/dashboard/invitations', [InvitationController::class, 'index'])->name('invitations');
     Route::get('/dashboard/account-settings', [UserController::class, 'accountSettings'])->name('account-settings');
     Route::post('/dashboard/account-settings', [UserController::class, 'submitSettings']);
     Route::get('/dashboard/profile-settings', [UserController::class, 'profileSettings'])->name('profile-settings');
+    Route::resource('/dashboard/plans/{plan:id}/activities', ActivityController::class);
+    Route::post('/search-users', [UserController::class, 'searchUsers']);
 });
 
 Route::get('/search/{search}', [PlaceController::class, 'search']);

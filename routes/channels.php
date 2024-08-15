@@ -11,8 +11,8 @@ Broadcast::channel('test-channel', function ($user) {
 // Broadcast::channel('activities.{roomId}', function ($user, $roomId) {
 //     return $user;
 // });
-Broadcast::channel('chat.{roomId}', function ($user, $roomId) {
-    return ['id' => $user->id, 'name' => $user->name];
+Broadcast::channel('plan.{roomId}', function ($user, $roomId) {
+    return ['id' => $user->id, 'name' => $user->name, 'profile_picture' => $user->profile_picture];
     if ($roomId == 'abcd') {
     }
 });
