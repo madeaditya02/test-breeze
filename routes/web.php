@@ -44,7 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/dashboard', function () {
-        return Inertia::render('MyDashboard');
+        return Inertia::render('MyDashboard', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->whereHas('activities', function ($query) {
+            $query->where('time', '>=', now()->startOfDay());
+        })->with(['activities', 'users'])->get()]);
     })->name('dashboard');
     Route::get('/dashboard/explore', [PlaceController::class, 'explore'])->name('explore');
     Route::get('/dashboard/plans', [PlanController::class, 'index'])->name('plans');

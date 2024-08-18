@@ -8,7 +8,9 @@ import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
+import { usePage } from "@inertiajs/vue3";
 const props = defineProps(['plan', 'onlineUsers'])
+const { props: { auth } } = usePage()
 const visible = defineModel('visible')
 const users = ref([])
 onMounted(async () => {
@@ -30,12 +32,16 @@ async function inviteUser() {
   // console.log(res);
 }
 const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
+const isOwner = computed(() => {
+  return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
+})
 </script>
 <template>
   <Toast />
-  <Dialog v-model:visible="visible" modal header="Invite Friends" :style="{ width: '32rem' }">
+  <Dialog v-model:visible="visible" modal :header="isOwner ? 'Invite Friends' : 'Team Members'"
+    :style="{ width: '32rem' }">
     <div class="flex flex-col gap-4 w-full">
-      <div>
+      <div v-if="isOwner">
         <span class="font-medium block mb-2">Invite Member</span>
         <InputGroup>
           <AutoComplete v-model="selectedUser" optionLabel="email" :suggestions="filteredUsers" @complete="search"
@@ -54,11 +60,15 @@ const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(use
         </InputGroup>
       </div>
       <div>
-        <span class="font-medium block mb-2">Team Members</span>
+        <span class="font-medium block mb-2" v-if="isOwner">Team Members</span>
         <ul class="list-none p-0 m-0 flex flex-col gap-4">
           <li v-for="user in plan.users" :key="user.id" class="flex items-center gap-2 justify-between">
             <div class="flex items-center gap-2">
-              <img :src="user.profile_picture" style="width: 32px" class="rounded-full" />
+              <div class="w-10 h-10 relative">
+                <img :src="user.profile_picture" class="rounded-full w-10 h-10" />
+                <div v-if="onlineUsers.includes(user.id)"
+                  class="w-2.5 h-2.5 rounded-full bg-green-500 absolute top-0 right-0"></div>
+              </div>
               <div>
                 <span class="font-medium">{{ user.name }}</span>
                 <div class="text-sm text-surface-500 dark:text-surface-400">{{ user.email }}</div>
@@ -68,7 +78,7 @@ const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(use
                           <i class="pi pi-angle-down"></i>
                       </div> -->
             </div>
-            <span v-if="onlineUsers.includes(user.id)" class="text-green-600">Online</span>
+            <span>{{ user.pivot.role }}</span>
           </li>
         </ul>
       </div>

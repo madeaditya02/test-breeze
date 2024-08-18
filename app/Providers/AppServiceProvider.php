@@ -25,5 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('edit-plan', function (User $user, Plan $plan) {
             return $plan->users()->wherePivotNotNull('accepted_at')->wherePivot('user_id', $user->id)->count() > 0;
         });
+        Gate::define('invite-delete-plan', function (User $user, Plan $plan) {
+            return $plan->users()->wherePivotNotNull('accepted_at')->wherePivot('role', 'Owner')->wherePivot('user_id', auth()->id())->count() > 0;
+        });
     }
 }

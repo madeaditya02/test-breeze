@@ -19,7 +19,8 @@ class PlanController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Plans', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->with('activities')->get()]);
+        // dd(auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get());
+        return Inertia::render('Plans', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get()]);
     }
 
     /**
@@ -92,15 +93,17 @@ class PlanController extends Controller
     }
     public function invite(Plan $plan, Request $request)
     {
-        $user_id = $request->input('user');
-        $userexist = $plan->users()->wherePivot('user_id', $user_id)->first();
-        if (!$userexist) {
-            $user = User::find($user_id);
-            $user->notify(new InvitePlan($plan, auth()->user()));
-            // Notification::send($users, new InvitePlan($plan, auth()->user()));
-            $plan->users()->attach($user);
-        } else {
-            // $userexist->notifications()->where('plan_id', $plan)->latest()->first()->update(['updated_at', now()]);
+        if (Gate::allows('invite-delete-plan', $plan)) {
+            $user_id = $request->input('user');
+            $userexist = $plan->users()->wherePivot('user_id', $user_id)->first();
+            if (!$userexist) {
+                $user = User::find($user_id);
+                $user->notify(new InvitePlan($plan, auth()->user()));
+                // Notification::send($users, new InvitePlan($plan, auth()->user()));
+                $plan->users()->attach($user, ['role' => 'Member']);
+            } else {
+                // $userexist->notifications()->where('plan_id', $plan)->latest()->first()->update(['updated_at', now()]);
+            }
         }
     }
 }

@@ -4,14 +4,15 @@ import CurrentPlanCard from './CurrentPlanCard.vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
 defineEmits(['sharePlan', 'simple'])
+defineProps(['currentPlans'])
 </script>
 <template>
   <div class="current-plan">
     <swiper :slidesPerView="'auto'" :spaceBetween="30" :pagination="{
       clickable: true,
     }">
-      <swiper-slide v-for="i in 7">
-        <current-plan-card @share-plan="$emit('sharePlan', i)" />
+      <swiper-slide v-for="plan in currentPlans">
+        <current-plan-card @share-plan="$emit('sharePlan', plan.id)" />
       </swiper-slide>
       <swiper-slide></swiper-slide>
     </swiper>

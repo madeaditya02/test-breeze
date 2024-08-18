@@ -9,7 +9,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ShareDialog from '@/Components/ShareDialog.vue';
 import ShareIconButton from '@/Components/ShareIconButton.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { rangePlan } from '@/util';
+import { useForm, usePage } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
 import Popover from 'primevue/popover';
@@ -18,6 +19,7 @@ import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
 defineOptions({ layout: DashboardLayout });
 
+const { props: { auth } } = usePage()
 const props = defineProps(['plan']);
 const plan = ref(props.plan);
 const activities = computed(() => {
@@ -26,13 +28,7 @@ const activities = computed(() => {
 const completedActivities = computed(() => {
   return plan.value.activities.filter(act => moment.utc(act.time).isBefore(moment()))
 })
-const rangeTime = computed(() => {
-  const length = plan.value.activities.length
-  return [
-    moment.utc(plan.value.activities[0].time).local().format('LL'),
-    moment.utc(plan.value.activities[length - 1].time).local().format('LL'),
-  ]
-})
+const rangeTime = computed(() => rangePlan(plan.value.activities))
 // console.log(plan.value);
 
 const onlineUsers = ref([])
@@ -106,6 +102,10 @@ const planAction = ref()
 function showPlanAction(event) {
   planAction.value.toggle(event)
 }
+
+const isOwner = computed(() => {
+  return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
+})
 </script>
 <template>
   <div class="flex justify-between">
@@ -117,7 +117,7 @@ function showPlanAction(event) {
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
         </svg>
-        <span>{{ rangeTime[0] }} - {{ rangeTime[1] }}</span>
+        <span>{{ rangeTime }}</span>
       </div>
       <div class="flex gap-3 items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -129,24 +129,24 @@ function showPlanAction(event) {
       </div>
     </div>
     <div class="flex items-end flex-col gap-4">
-      <button @click="showPlanAction" class="lg:hidden">
+      <button @click="showPlanAction" v-if="isOwner" class="lg:hidden">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-7">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
         </svg>
       </button>
-      <Popover ref="planAction">
+      <Popover ref="planAction" v-if="isOwner">
         <div class="flex">
-          <share-icon-button @share="showShare = true" />
+          <share-icon-button v-if="isOwner" @share="showShare = true" />
           <FavoriteButton />
-          <DeletePlanButton />
+          <DeletePlanButton v-if="isOwner" />
         </div>
       </Popover>
-      <div class="hidden lg:flex gap-3">
-        <share-icon-button @share="showShare = true" />
+      <div :class="isOwner ? 'hidden lg:flex gap-3' : ''">
+        <share-icon-button v-if="isOwner" @share="showShare = true" />
         <FavoriteButton />
-        <DeletePlanButton />
+        <DeletePlanButton v-if="isOwner" />
       </div>
       <div class="hidden md:flex">
         <a href="#" @click="showShare = true">

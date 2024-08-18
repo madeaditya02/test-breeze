@@ -15,6 +15,8 @@ import NewPlanModal from "@/Components/NewPlanModal.vue";
 import ExistingPlanModal from "@/Components/ExistingPlanModal.vue";
 
 defineOptions({ layout: DashboardLayout });
+const props = defineProps(['plans'])
+
 const showModal = ref(false);
 const showNewPlanModal = ref(false);
 
@@ -26,7 +28,7 @@ const showShare = ref(false)
     Add New Plan
   </PlusButton>
 
-  <CurrentPlans @share-plan="showShare = true" />
+  <CurrentPlans :current-plans="plans" @share-plan="showShare = true" />
 
   <h1 class="text-3xl font-semibold mb-5 mt-12">Recommended for You</h1>
   <div class="inline-flex mb-3 gap-3 items-center px-3 py-2 rounded-lg border text-[rgba(0,0,0,0.5)] text-base">
@@ -65,7 +67,7 @@ const showShare = ref(false)
   <ExistingPlanModal v-model:show="showModal" />
   <NewPlanModal v-model:show="showNewPlanModal" />
 
-  <ShareDialog v-model:visible="showShare" />
+  <ShareDialog v-if="plans.length > 0" v-model:visible="showShare" :plan="plans[0]" />
 </template>
 <style>
 .recommendations .swiper-slide {

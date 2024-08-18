@@ -8,22 +8,21 @@ import PrimaryButton from './PrimaryButton.vue';
 import { computed } from 'vue';
 import moment from 'moment';
 import { Link } from '@inertiajs/vue3';
+import { humanizeFromNow, planStatus, rangePlan } from '@/util';
 
 defineEmits(['sharePlan']);
 const { plan } = defineProps(['plan'])
-const rangeTime = computed(() => {
-  const length = plan.activities.length
-  const start = moment.utc(plan.activities[0].time).local().format('LL')
-  const end = moment.utc(plan.activities[length - 1].time).local().format('LL')
-  return start == end ? start : `${start} - ${end}`
-})
+const rangeTime = computed(() => rangePlan(plan.activities))
+const currentActivities = computed(() => plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2))
+console.log(currentActivities.value);
+
 </script>
 <template>
   <div class="px-6 py-5 border rounded-xl flex justify-between flex-col md:flex-row">
     <div>
       <div class="flex items-center gap-4">
         <Link :href="`/dashboard/plans/${plan.id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
-        <StatusBadge status="Upcoming" />
+        <StatusBadge :status="planStatus(plan.activities)" />
       </div>
       <div class="flex md:items-center gap-4 mt-4 flex-col md:flex-row">
         <div class="flex gap-3 items-center">
@@ -45,16 +44,18 @@ const rangeTime = computed(() => {
       </div>
       <div class="flex items-center gap-8">
         <div class="grid gap-x-5 gap-y-3 mt-4 items-center" style="grid-template-columns: auto auto;">
-          <div class="flex gap-2 items-center">
-            <div class="w-[10px] h-[10px] rounded-full bg-[#FAFD7B]"></div>
-            <div>Pantai Mertasari</div>
-          </div>
-          <div>16:00, Tomorrow</div>
-          <div class="flex gap-2 items-center">
+          <template v-for="activity in currentActivities">
+            <div class="flex gap-2 items-center">
+              <div class="w-[10px] h-[10px] rounded-full bg-[#FAFD7B]"></div>
+              <div>{{ activity.activity }}</div>
+            </div>
+            <div>{{ moment.utc(activity.time).local().format('HH:mm') }}, {{ humanizeFromNow(activity.time) }}</div>
+          </template>
+          <!-- <div class="flex gap-2 items-center">
             <div class="w-[10px] h-[10px] rounded-full bg-[#FAFD7B]"></div>
             <div>Pantai Sanur</div>
           </div>
-          <div>19:00, Tomorrow</div>
+          <div>19:00, Tomorrow</div> -->
         </div>
       </div>
     </div>

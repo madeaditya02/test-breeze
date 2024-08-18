@@ -5,16 +5,19 @@ import PlanCard from '@/Components/PlanCard.vue';
 import PlusButton from '@/Components/PlusButton.vue';
 import ShareDialog from '@/Components/ShareDialog.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import { ref } from 'vue';
+import { planStatus } from '@/util';
+import { computed, ref } from 'vue';
 
 defineOptions({ layout: DashboardLayout });
 const props = defineProps(['plans'])
+
 const showNewPlanModal = ref(false)
 const showShare = ref(false)
+const currentPlans = computed(() => props.plans.filter(plan => planStatus(plan.activities) != 'Completed').slice(0, 5))
 </script>
 <template>
   <h1 class="text-3xl font-semibold mb-5">My Plans</h1>
-  <CurrentPlans @share-plan="showShare = true" />
+  <CurrentPlans @share-plan="showShare = true" :current-plans="currentPlans" />
 
   <h1 class="text-3xl font-semibold mt-12 mb-5">All Plans</h1>
   <PlusButton class="mb-5" @click="showNewPlanModal = true">
@@ -24,6 +27,6 @@ const showShare = ref(false)
     <PlanCard v-for="plan in plans" @share-plan="showShare = true" :plan="plan" />
   </div>
 
-  <ShareDialog v-model:visible="showShare" />
+  <ShareDialog v-if="plans.length > 0" v-model:visible="showShare" :plan="plans[0]" />
   <NewPlanModal v-model:show="showNewPlanModal" />
 </template>

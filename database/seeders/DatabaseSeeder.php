@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'id' => $id1,
             'name' => 'Trip to Bali'
         ]);
-        $plan1->users()->attach($user2->id, ['accepted_at' => now()]);
+        $plan1->users()->attach($user2->id, ['accepted_at' => now(), 'role' => 'Owner']);
         // $plan1->users()->attach($user3->id);
         $plan2 = Plan::create([
             'id' => Str::random(6),

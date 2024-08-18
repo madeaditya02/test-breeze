@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('plan_id');
             $table->timestamp('accepted_at')->nullable();
+            $table->enum('role', ['Owner', 'Member']);
             $table->timestamps();
         });
     }
