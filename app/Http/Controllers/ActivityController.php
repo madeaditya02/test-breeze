@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Models\Place;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Events\UpdateActivity;
@@ -36,12 +37,30 @@ class ActivityController extends Controller
             abort(403);
         }
         $data = $request->input('data');
-        $data['plan_id'] = $plan->id;
         $activities = $request->input('activities');
-        array_push($activities, Activity::create($data));
-        broadcast(new UpdateActivity($activities, $plan->id))->toOthers();
+        $newActivity = [
+            'plan_id' => $plan->id,
+            'place_id' => $data['place']['id'],
+            'time' => $data['time']
+        ];
+        Place::upsert([
+            'id' => $data['place']['id'],
+            'name' => $data['place']['displayName']['text'],
+            'types' => json_encode($data['place']['types']),
+            'address' => $data['place']['formattedAddress'],
+            'latitude' => $data['place']['location']['latitude'],
+            'longitude' => $data['place']['location']['longitude'],
+            'rating' => $data['place']['rating'],
+            'url' => $data['place']['googleMapsUri'],
+            'summary' => $data['place']['editorialSummary']['text'],
+            'photo' => $data['place']['photos'][0]['name'],
+        ], ['id']);
+        // array_push($activities, Activity::create($newActivity));
+        Activity::create($newActivity);
+        $updated = $plan->activities()->with('place')->get();
+        broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
         // UpdateActivity::dispatch($activities, $data['plan_id']);
-        return response()->json($activities);
+        return response()->json($updated);
     }
 
     /**

@@ -27,6 +27,11 @@ export const humanizeFromNow = (time) =>
         lastWeek: "[Last] dddd",
         sameElse: "D MMMM",
     });
+
+export const placePhoto = (name) =>
+    `https://places.googleapis.com/v1/${name}/media?key=${
+        import.meta.env.VITE_MAPS_API_KEY
+    }&maxHeightPx=360&maxWidthPx=320`;
 // moment
 //     .utc(time)
 //     .local()

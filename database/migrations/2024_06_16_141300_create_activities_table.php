@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->string('activity');
+            $table->string('place_id');
             $table->string('plan_id');
             $table->datetime('time');
             $table->timestamps();
             $table->foreign('plan_id')->references('id')->on('plans');
+            $table->foreign('place_id')->references('id')->on('places');
         });
     }
 

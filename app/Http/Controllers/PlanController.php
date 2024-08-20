@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Notifications\InvitePlan;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ class PlanController extends Controller
             $query->orderBy('time', 'asc');
         }, 'users' => function ($query) {
             $query->wherePivotNotNull('accepted_at');
-        }]);
+        }, 'activities.place']);
         return Inertia::render('Plan', ['plan' => $plan]);
     }
 

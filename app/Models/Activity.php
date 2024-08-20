@@ -20,6 +20,16 @@ class Activity extends Model
         return $this->belongsTo(Plan::class);
     }
 
+    /**
+     * Get the place that owns the Plan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class, 'place_id', 'id');
+    }
+
     protected function casts(): array
     {
         return [

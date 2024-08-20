@@ -4,15 +4,20 @@ import DeletePlanButton from '@/Components/DeletePlanButton.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
 import MapComponent from '@/Components/MapComponent.vue';
 import PencilSquareIconButton from '@/Components/PencilSquareIconButton.vue';
+import PlaceCard from '@/Components/PlaceCard.vue';
 import PlusButton from '@/Components/PlusButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SelectLocation from '@/Components/SelectLocation.vue';
 import ShareDialog from '@/Components/ShareDialog.vue';
 import ShareIconButton from '@/Components/ShareIconButton.vue';
+import Stars from '@/Components/Stars.vue';
+import Trivia from '@/Components/Trivia.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import { rangePlan } from '@/util';
+import { placePhoto, rangePlan } from '@/util';
 import { useForm, usePage } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
+import Dialog from 'primevue/dialog';
 import Popover from 'primevue/popover';
 import Rating from 'primevue/rating';
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
@@ -66,26 +71,6 @@ const showAddPlan = ref(false);
 const rating = ref(null);
 const showShare = ref(false);
 const showMap = ref(true);
-watch(showAddPlan, () => {
-  newActivity.reset()
-})
-
-const newActivity = useForm({
-  time: '',
-  location: ''
-});
-async function submitActivity() {
-  const res = await axios.post(`/dashboard/plans/${plan.value.id}/activities`, {
-    data: {
-      activity: `New Plan #${Date.now()}`,
-      time: newActivity.time
-      // plan_id: plan.value.id
-    },
-    activities: plan.value.activities
-  })
-  showAddPlan.value = false
-  // console.log(res);
-}
 
 async function deleteActivity(id) {
   plan.value.activities = plan.value.activities.filter(act => act.id != id)
@@ -106,6 +91,33 @@ function showPlanAction(event) {
 const isOwner = computed(() => {
   return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
 })
+
+// Location
+const selectLocation = ref(false)
+function handleSelectedLocation(place) {
+  // Untuk Add Activity
+  if (showAddPlan) {
+    newActivity.place = place
+  }
+}
+
+// Add Activity
+watch(showAddPlan, () => {
+  newActivity.reset()
+})
+const newActivity = useForm({
+  time: '',
+  place: null
+});
+async function submitActivity() {
+  const res = await axios.post(`/dashboard/plans/${plan.value.id}/activities`, {
+    data: newActivity.data(),
+    activities: plan.value.activities
+  })
+  showAddPlan.value = false
+  newActivity.reset()
+  console.log(res);
+}
 </script>
 <template>
   <div class="flex justify-between">
@@ -192,26 +204,31 @@ const isOwner = computed(() => {
           {{ showMap ? 'Hide' : 'Show' }} Map
         </button> -->
       </div>
+      <!-- Form Add Activity -->
       <form class="px-6 py-5 border rounded-xl mt-4" v-if="showAddPlan" @submit.prevent="submitActivity">
         <div class="flex gap-5 items-center">
-          <div class="flex gap-2.5 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            <DatePicker v-model="newActivity.time" showTime hourFormat="24" :min-date="(new Date())"
-              placeholder="mm/dd/yyyy --:--"></DatePicker>
-          </div>
-          <div class="flex gap-2.5 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            <button type="button" class="px-3 py-1 rounded-md border border-[#cbd5e1] hover:border-[#94a3b8]">Select
-              Location</button>
+          <div class="flex gap-2.5" :class="newActivity.place ? 'flex-col w-full' : 'items-center'">
+            <div class="flex gap-2.5 items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+              <button @click="selectLocation = true" type="button"
+                class="px-3 py-1 rounded-md border border-[#cbd5e1] hover:border-[#94a3b8]">Select
+                Location</button>
+            </div>
+            <PlaceCard v-if="newActivity.place" :place="newActivity.place" />
+            <div class="flex gap-2.5 items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <DatePicker v-model="newActivity.time" showTime hourFormat="24" :min-date="(new Date())"
+                placeholder="mm/dd/yyyy --:--"></DatePicker>
+            </div>
           </div>
         </div>
         <div class="flex gap-2.5 mt-3 items-center">
@@ -220,7 +237,6 @@ const isOwner = computed(() => {
             @click="showAddPlan = false">Cancel</button>
         </div>
       </form>
-      <MapComponent class="my-4" v-if="showMap" />
       <ActivityCard v-for="activity in activities" :key="activity.id" :activity="activity"
         @delete="deleteActivity(activity.id)" />
       <hr class="mt-4">
@@ -242,30 +258,15 @@ const isOwner = computed(() => {
 
     </div>
     <div class="md:w-[40%]">
-      <div class="w-full bg-[#F2F2F2] rounded-xl px-4 py-2.5 h-fit max-h-full">
-        <h2 class="text-2xl font-semibold mb-4">Trivia</h2>
-        <!-- <div class="h-[150px] flex justify-center items-center text-gray-400 flex-col gap-4">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            class="size-10">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" />
-          </svg>
-          Select one place to view trivia
-        </div> -->
-        <img src="/img/beach.jpg" alt="" class="mt-4 w-[280px] max-w-full h-[160px] rounded-xl object-cover">
-        <h3 class="text-xl font-semibold mt-4">Pantai Mertasari</h3>
-        <p class="mt-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Excepturi architecto eligendi
-          dignissimos itaque doloribus fugiat magni minus atque, delectus necessitatibus quod sunt ut eius dolore quae
-          esse sint provident! Sed?</p>
-        <h3 class="text-lg font-medium mt-4">Sejarah</h3>
-        <p class="mt-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Excepturi architecto eligendi
-          dignissimos itaque doloribus fugiat magni minus atque, delectus necessitatibus quod sunt ut eius dolore quae
-          esse sint provident! Sed?</p>
-      </div>
+      <h2 class="text-2xl font-semibold mb-4">Maps</h2>
+      <MapComponent class="my-4" v-if="showMap" />
+      <Trivia />
     </div>
   </div>
 
   <ShareDialog v-model:visible="showShare" :plan="plan" :online-users="onlineUsers" />
+
+  <SelectLocation v-model="selectLocation" @selected="handleSelectedLocation" />
 </template>
 <style>
 .p-datepicker-input {
