@@ -15,6 +15,9 @@ import axios from 'axios';
 import { placePhoto } from '@/util';
 import PrimaryButton from './PrimaryButton.vue';
 import PlaceCard from './PlaceCard.vue';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import Textarea from 'primevue/textarea';
+
 defineProps(['visible'])
 const emit = defineEmits(['selected'])
 const show = defineModel()
@@ -40,6 +43,36 @@ function submit() {
   searchQuery.value = ''
   searchResults.value = []
   show.value = false
+}
+
+// AI
+const prompt = ref('')
+const AISearchResults = ref([])
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+async function getAI() {
+  console.log(prompt.value);
+  const ourPrompt = `${prompt.value}. Provide some places (more than one) recommendations based on the prompt. Return an array of the fullname, city and regency of the place as one string.`;
+  const result = await model.generateContent(ourPrompt);
+  const response = await result.response;
+  const text = response.text();
+  const places = JSON.parse(text);
+  console.log(places);
+  AISearchResults.value = []
+  places.forEach(async place => {
+    // console.log(place);
+    const res = (await axios.post('https://places.googleapis.com/v1/places:searchText', {
+      textQuery: place
+    }, {
+      headers: {
+        "X-Goog-Api-Key": import.meta.env.VITE_MAPS_API_KEY,
+        "X-Goog-FieldMask": "*"
+      }
+    }))
+    console.log(res);
+    AISearchResults.value.push(res.data.places[0]);
+    // return res.data.places[0]
+  });
 }
 </script>
 <template>
@@ -78,15 +111,14 @@ function submit() {
             </div> -->
           </TabPanel>
           <TabPanel value="1">
-            <p class="m-0">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam
-              rem
-              aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-              explicabo.
-              Nemo enim
-              ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
-              qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-            </p>
+            <form action="" @submit.prevent="getAI">
+              <Textarea name="" id="" v-model="prompt" placeholder="Describe what you want" class="block mb-3 w-full"
+                rows="3" />
+              <PrimaryButton>Submit</PrimaryButton>
+            </form>
+            <PlaceCard v-for="place in AISearchResults" :place="place" @click="() => selectedPlace = place"
+              class="hover:bg-gray-100 cursor-pointer" :key="place.id"
+              :class="selectedPlace.id == place.id ? 'bg-gray-100' : 'bg-white'" />
           </TabPanel>
         </TabPanels>
       </Tabs>
