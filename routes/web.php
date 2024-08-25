@@ -30,9 +30,19 @@ Route::get('/', [HomeController::class, 'index']);
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::name('profile.')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::name('plan.')->group(function () {
+        Route::get('/dashboard/plans', [PlanController::class, 'index'])->name('showAll');
+        Route::post('/dashboard/plan', [PlanController::class, 'store'])->name('create');
+        Route::get('/dashboard/plans/{plan:id}', [PlanController::class, 'show'])->name('detail');
+        Route::get('/dashboard/plans/{plan:id}/join', [PlanController::class, 'join'])->name('join');
+        Route::post('/dashboard/plans/{plan:id}/invite', [PlanController::class, 'invite'])->name('invite');
+    });
 
     Route::get('/plans', function () {
         return Inertia::render('Rooms', ['plans' => Plan::all()]);
@@ -49,10 +59,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->with(['activities', 'users'])->get()]);
     })->name('dashboard');
     Route::get('/dashboard/explore', [PlaceController::class, 'explore'])->name('explore');
-    Route::get('/dashboard/plans', [PlanController::class, 'index'])->name('plans');
-    Route::get('/dashboard/plans/{plan:id}', [PlanController::class, 'show'])->name('plan');
-    Route::get('/dashboard/plans/{plan:id}/join', [PlanController::class, 'join'])->name('join-plan');
-    Route::post('/dashboard/plans/{plan:id}/invite', [PlanController::class, 'invite'])->name('invite-plan');
     Route::get('/dashboard/invitations', [InvitationController::class, 'index'])->name('invitations');
     Route::get('/dashboard/account-settings', [UserController::class, 'accountSettings'])->name('account-settings');
     Route::post('/dashboard/account-settings', [UserController::class, 'submitSettings']);

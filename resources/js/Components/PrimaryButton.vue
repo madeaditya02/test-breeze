@@ -4,7 +4,6 @@ import { Link } from '@inertiajs/vue3';
 const props = defineProps(['class', 'size', 'asLink', 'external'])
 const customClass = `btn-${props.size ?? 'base'} ${props.class ?? ''}`;
 defineEmits(['click'])
-console.log(props.external);
 
 </script>
 <template>

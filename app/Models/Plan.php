@@ -12,7 +12,7 @@ class Plan extends Model
     use HasFactory;
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['id', 'name'];
+    protected $fillable = ['id', 'name', 'start_date', 'end_date'];
     protected $primaryKey = 'id';
     /**
      * Get all of the activities for the Plan

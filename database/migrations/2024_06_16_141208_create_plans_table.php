@@ -12,10 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('plans', function (Blueprint $table) {
-            $table->string('id');
+            $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('name');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->string('invitation_id')->nullable();
             $table->timestamps();
-            $table->primary('id');
+            $table->foreign('user_id')->references('id')->on('user');
         });
     }
 

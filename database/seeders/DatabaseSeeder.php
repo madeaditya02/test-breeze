@@ -45,17 +45,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'bismayoga@gmail.com',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Bisma+Yoga'
         ]);
-        $id1 = Str::random(6);
-        $plan1 = Plan::create([
-            'id' => $id1,
-            'name' => 'Trip to Bali'
-        ]);
-        $plan1->users()->attach($user2->id, ['accepted_at' => now(), 'role' => 'Owner']);
         Place::create([
             'id' => "ChIJwRIJzsFB0i0RQdXwd3GvJvA",
             'name' => "Sanur",
             'address' => "Sanur, Bali, Indonesia",
-            'types' => json_encode(["natural_feature","establishment"]),
+            'types' => json_encode(["natural_feature", "establishment"]),
             "latitude" => -8.7071782,
             "longitude" => 115.26262360000001,
             "rating" => 4.5,
@@ -67,25 +61,13 @@ class DatabaseSeeder extends Seeder
             'id' => "ChIJJ_QeCxRF0i0RPuU1Y3d-RuI",
             'name' => "Balangan Beach",
             'address' => "Balangan Beach, South Kuta, Badung Regency, Bali, Indonesia",
-            'types' => json_encode(["natural_feature","establishment"]),
+            'types' => json_encode(["natural_feature", "establishment"]),
             "latitude" => -8.7920477999999989,
             "longitude" => 115.12341719999999,
             "rating" => 4.6,
             "url" => "https://maps.google.com/?cid=16304858552172143934",
             "summary" => "Low-key, white-sand beach popular with surfers & sunset viewers, with a few eateries nearby",
             "photo" => "places/ChIJJ_QeCxRF0i0RPuU1Y3d-RuI/photos/AelY_CsJGBvQjjmHyajZLaKDMPyXqAyOaLmHPDmcZTftX21LgHs9qIpf7qBEABqaoDA1byc2Jp2-APCAZQfVYXZ77HBLexyq8243o-RmTU_cz-7ZfBOF18a7n8P4N2rqviPdhN-5ItGdHr2eyaY0JB_Ry7jvcM4Es8RhkMfz",
-        ]);
-        // $plan1->users()->attach($user3->id);
-        $plan2 = Plan::create([
-            'id' => Str::random(6),
-            'name' => 'Trip to Raja Ampat'
-        ]);
-        $plan1->activities()->createMany([
-            ['place_id' => 'ChIJwRIJzsFB0i0RQdXwd3GvJvA', 'time' => now()->addHours(2)->toDateTimeString()],
-            ['place_id' => 'ChIJJ_QeCxRF0i0RPuU1Y3d-RuI', 'time' => now()->addHours(2)->toDateTimeString()]
-        ]);
-        $plan2->activities()->createMany([
-            ['place_id' => 'ChIJJ_QeCxRF0i0RPuU1Y3d-RuI', 'time' => now()->addHours(2)->toDateTimeString()],
         ]);
     }
 }
