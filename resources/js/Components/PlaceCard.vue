@@ -20,14 +20,14 @@ const emit = defineEmits(['click'])
 <template>
   <div class="py-4 border-b flex gap-4" :class="class" @click="$emit('click')">
     <img v-if="place.photos" :src="placePhoto(place.photos[0].name)" alt=""
-      class="w-[160px] h-[120px] object-cover rounded-xl">
+      class="!w-[160px] h-[120px] object-cover rounded-xl">
     <div class="flex-grow">
       <h3 class="text-xl font-semibold">{{ place.displayName.text }}</h3>
       <div class="flex items-center gap-2 mt-1" v-if="place.rating">
         <span>{{ place.rating }}</span>
         <Stars :rate="place.rating" />
       </div>
-      <p class="mt-">{{ place.formattedAddress }}</p>
+      <p class="text-wrap">{{ place.formattedAddress }}</p>
       <PrimaryButton :as-link="place.googleMapsUri" external class="!py-1 text-sm !rounded-md mt-1">View
         Location
       </PrimaryButton>

@@ -21,6 +21,8 @@ const showModal = ref(false);
 const showNewPlanModal = ref(false);
 
 const showShare = ref(false)
+console.log(props.plans);
+
 </script>
 <template>
   <h1 class="text-3xl font-semibold mb-5">My Plans</h1>

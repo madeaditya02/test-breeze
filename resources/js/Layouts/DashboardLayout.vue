@@ -8,7 +8,7 @@ import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 
 const page = usePage();
-const loggedUser = page.props.auth.user;
+const loggedUser = ref(page.props.auth.user);
 const showNavbar = ref(false)
 // console.log(page.props);
 const toast = useToast();
@@ -16,6 +16,8 @@ onUnmounted(
   router.on('success', (event) => {
     console.log('Pindah page');
     const page = usePage();
+    loggedUser.value = page.props.auth.user;
+    // loggedUser
     const alert = page.props.alert
     // console.log(alert);
     // console.log(page.props);
@@ -58,7 +60,15 @@ const confirmLogout = () => {
 
 </script>
 <template>
-  <ConfirmDialog />
+  <ConfirmDialog>
+    <template #icon>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="size-12 text-red-600">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+      </svg>
+    </template>
+  </ConfirmDialog>
   <nav
     class="w-[320px] max-w-[calc(100%-80px)] bg-blue-lighter px-8 py-10 fixed left-0 top-0 bottom-0 z-30 transition-all duration-200"
     :class="showNavbar ? 'ml-0' : '-ml-[320px] lg:ml-0'">
@@ -96,8 +106,8 @@ const confirmLogout = () => {
       </div>
     </Popover>
     <div class="flex flex-col gap-4 w-full">
-      <Link href="/dashboard"
-        class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg bg-blue-light text-blue-dark">
+      <Link href="/dashboard" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light"
+        :class="{ 'bg-blue-light text-blue-dark': $page.url == '/dashboard' }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -105,7 +115,8 @@ const confirmLogout = () => {
       </svg>
       <span>Home</span>
       </Link>
-      <Link href="/dashboard/plans" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light">
+      <Link href="/dashboard/plans" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light"
+        :class="{ 'bg-blue-light text-blue-dark': $page.url.startsWith('/dashboard/plans') }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -113,7 +124,8 @@ const confirmLogout = () => {
       </svg>
       <span>Plans</span>
       </Link>
-      <Link href="/dashboard/explore" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light">
+      <Link href="/dashboard/explore" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light"
+        :class="{ 'bg-blue-light text-blue-dark': $page.url.startsWith('/dashboard/explore') }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -122,7 +134,8 @@ const confirmLogout = () => {
       <span>Explore</span>
       </Link>
       <Link href="/dashboard/invitations"
-        class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light">
+        class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light"
+        :class="{ 'bg-blue-light text-blue-dark': $page.url.startsWith('/dashboard/invitations') }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -130,13 +143,14 @@ const confirmLogout = () => {
       </svg>
       <span>Invitations</span>
       </Link>
-      <Link href="" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light">
+      <Link href="/dashboard/stories" class="flex gap-4 px-2.5 py-2 items-center w-full rounded-lg hover:bg-blue-light"
+        :class="{ 'bg-blue-light text-blue-dark': $page.url.startsWith('/dashboard/stories') }">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round"
-          d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+          d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
       </svg>
-      <span>Favorites</span>
+      <span>Stories</span>
       </Link>
     </div>
   </nav>

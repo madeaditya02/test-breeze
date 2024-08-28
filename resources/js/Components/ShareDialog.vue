@@ -19,8 +19,10 @@ onMounted(async () => {
 })
 const filteredUsers = ref([])
 const selectedUser = ref(null)
-function search(event) {
-  filteredUsers.value = users.value.filter(user => user.name.toLowerCase().includes(event.query.toLowerCase()))
+async function search(event) {
+  // filteredUsers.value = users.value.filter(user => user.name.toLowerCase().includes(event.query.toLowerCase()))
+  filteredUsers.value = (await axios.get(`/search-users?q=${event.query.toLowerCase()}`)).data
+  console.log(filteredUsers.value);
 }
 const toast = useToast();
 async function inviteUser() {

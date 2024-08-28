@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -47,8 +48,29 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function plans(): BelongsToMany
+    public function plans()
     {
         return $this->belongsToMany(Plan::class);
+    }
+    
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
+
+    public function following() {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
+    }
+    
+    // users that follow this user
+    public function followers() {
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
+    }
+    
+    public function followed() {
+        // return auth()->check() ? $this->followers : false;
+        return auth()->check() ? $this->followers->contains(function($user) {
+            return $user->id == auth()->id();
+        }) : false;
     }
 }

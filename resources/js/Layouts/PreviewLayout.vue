@@ -2,10 +2,8 @@
 import IconButton from '@/Components/IconButton.vue';
 import OutlineButton from '@/Components/OutlineButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -20,18 +18,9 @@ onMounted(() => {
   })
 })
 
-const toast = useToast();
-onUnmounted(
-  router.on('success', (event) => {
-    const page = usePage();
-    const alert = page.props.alert
-    if (alert) {
-      toast.add({ severity: alert[0], summary: alert[1], detail: alert[2], life: 4000 });
-    }
-  })
-)
-
 const show = ref(false)
+
+const emit = defineEmits(['back', 'publish'])
 </script>
 <template>
   <nav
@@ -45,23 +34,34 @@ const show = ref(false)
         </svg>
       </IconButton>
     </div>
-    <div class="md:!flex gap-4 md:gap-12 md:items-center flex-col md:flex-row py-5 md:py-0 px-8 md:px-0"
+    <!-- <div class="md:!flex gap-4 md:gap-12 md:items-center flex-col md:flex-row py-5 md:py-0 px-8 md:px-0"
       :class="show ? 'flex' : 'hidden'">
       <Link href="/">Home</Link>
       <Link href="/stories">Stories</Link>
       <Link href="#">Explore</Link>
       <Link href="#">FaQ</Link>
-    </div>
+    </div> -->
     <div class="px-8 md:px-0 md:!block" :class="show ? 'block' : 'hidden'">
-      <OutlineButton as-link="/dashboard" v-if="user">Dashboard</OutlineButton>
-      <div class="flex items-center gap-5" v-if="!user">
-        <OutlineButton as-link="/login">Log In</OutlineButton>
-        <PrimaryButton as-link="/register">Sign Up</PrimaryButton>
+      <div class="flex items-center gap-5">
+        <OutlineButton @click="$emit('back')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          Back to Edit
+        </OutlineButton>
+        <PrimaryButton @click="$emit('publish')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+          </svg>
+          Publish Article
+        </PrimaryButton>
       </div>
     </div>
   </nav>
   <div class="pt-20">
     <slot />
   </div>
-  <Toast />
 </template>

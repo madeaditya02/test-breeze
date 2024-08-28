@@ -6,26 +6,11 @@ import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import { Link, usePage } from '@inertiajs/vue3';
+import GuestLayout from '@/Layouts/GuestLayout.vue';
 
-const page = usePage();
-const user = page.props.auth.user;
+defineOptions({ layout: GuestLayout })
 </script>
 <template>
-  <nav class="flex justify-between items-center mx-[120px] pt-8">
-    <Link href="/" class="text-3xl font-semibold">Travel Planner</Link>
-    <div class="flex gap-12 items-center">
-      <Link href="/">Home</Link>
-      <Link href="#">Explore</Link>
-      <Link href="#">Features</Link>
-      <Link href="#">FaQ</Link>
-    </div>
-    <OutlineButton as-link="/dashboard" v-if="user">Dashboard</OutlineButton>
-    <div class="flex items-center gap-5" v-if="!user">
-      <OutlineButton as-link="/login">Log In</OutlineButton>
-      <PrimaryButton as-link="/register">Sign Up</PrimaryButton>
-    </div>
-  </nav>
-
   <div id="hero"
     class="relative rounded-2xl mt-14 mx-[120px] bg-[url('/img/hero-view.jpg')] bg-cover bg-no-repeat bg-center text-white before:content-[''] before:block before:absolute before:z-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] before:rounded-2xl">
     <div class="relative p-16 z-10">

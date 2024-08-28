@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, usePage } from '@inertiajs/vue3'
 import axios from 'axios'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -8,15 +8,18 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import InputText from 'primevue/inputtext'
 
 defineOptions({ layout: DashboardLayout });
-const props = defineProps(['user'])
-const form = useForm({ ...props.user, pictureFile: null })
+// const props = defineProps(['user'])
+const { props: { auth: { user: loggedUser } } } = usePage()
+const form = useForm({
+  name: loggedUser.name,
+  username: loggedUser.username,
+  profile_picture: loggedUser.profile_picture,
+  pictureFile: null
+})
 onUnmounted(() => console.log('Unonmounted'))
 
 function updateProfile() {
-  form.transform(data => {
-    data.tags = data.tags.map(topic => topic.id)
-    return data
-  }).post('/dashboard/profile')
+  form.post('/dashboard/profile-settings')
 }
 
 // Image
@@ -35,7 +38,7 @@ function crop() {
   cropper.value.getResult().canvas.toBlob((blob) => {
     console.log(blob)
     form.pictureFile = blob
-    form.picture = URL.createObjectURL(blob)
+    form.profile_picture = URL.createObjectURL(blob)
     closeCropper()
   })
 }
@@ -56,16 +59,24 @@ function closeCropper() {
         <h2 class="text-2xl font-semibold">General</h2>
         <div class="mt-4 mb-4">
           <label class="font-medium" for="name">Full name</label>
-          <InputText v-model="form.name" type="text" placeholder="Enter your full name" class="block w-full mt-2" />
+          <InputText v-model="form.name" type="text" placeholder="Enter your full name" :invalid="form.errors.name"
+            class="block w-full mt-2" />
+          <div v-if="form.errors.name" class="text-red-600 mt-1">{{ form.errors.name }}</div>
+        </div>
+        <div class="mt-4 mb-4">
+          <label class="font-medium" for="name">Username</label>
+          <InputText v-model="form.username" type="text" placeholder="Enter your username"
+            :invalid="form.errors.username" class="block w-full mt-2" />
+          <div v-if="form.errors.username" class="text-red-600 mt-1">{{ form.errors.username }}</div>
         </div>
         <div class="mb-4">
           <label class="font-medium" for="name">Profile Picture</label>
           <a href="#" class="relative block w-fit mt-4" @click.prevent="fileInput.click()">
-            <img :src="form.picture" alt="" class="w-32 md:w-48 h-32 md:h-48 rounded-full shadow-xl">
-            <button class="px-2 py-1.5 rounded-md bg-white border absolute bottom-0 left-0">Edit</button>
+            <img :src="form.profile_picture" alt="" class="w-32 md:w-48 h-32 md:h-48 rounded-full shadow-xl">
+            <button type="button" class="px-2 py-1.5 rounded-md bg-white border absolute bottom-0 left-0">Edit</button>
           </a>
           <input type="file" name="pictureFile" id="pictureFile" class="hidden" @change="changeFile"
-            @click="$event.target.value = null" ref="fileInput">
+            @click="$event.target.value = null" ref="fileInput" accept="image/*">
         </div>
         <!-- <h2 class="text-2xl font-semibold mt-6">About you</h2>
         <div class="mt-4 mb-4">

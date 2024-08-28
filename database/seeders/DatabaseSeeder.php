@@ -23,28 +23,35 @@ class DatabaseSeeder extends Seeder
         $user1 = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'username' => 'test',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Test+User'
         ]);
         $user2 = User::factory()->create([
             'name' => 'Made Aditya',
+            'username' => 'mdadityaa',
             'email' => 'imadeaditya4@gmail.com',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Made+Aditya'
         ]);
         $user3 = User::factory()->create([
             'name' => 'Wahyu Pranata',
+            'username' => 'wahyupranata',
             'email' => 'wahyupranata@gmail.com',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Wahyu+Pranata'
         ]);
         $user4 = User::factory()->create([
             'name' => 'Kadek Chandra',
+            'username' => 'kdkchandra',
             'email' => 'kadekchandra@gmail.com',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Kadek+Chandra'
         ]);
-        $user4 = User::factory()->create([
+        $user5 = User::factory()->create([
             'name' => 'Bisma Yoga',
+            'username' => 'ygbismaa',
             'email' => 'bismayoga@gmail.com',
             'profile_picture' => 'https://ui-avatars.com/api/?name=Bisma+Yoga'
         ]);
+        $user3->following()->attach($user2);
+        $user4->following()->attach($user3);
         $id1 = Str::random(6);
         $plan1 = Plan::create([
             'id' => $id1,

@@ -33,4 +33,14 @@ class Plan extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('accepted_at', 'role');
     }
+
+    /**
+     * Get all of the stories for the Plan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
 }

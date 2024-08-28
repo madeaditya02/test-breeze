@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Story;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 use App\Notifications\InvitePlan;
@@ -21,7 +22,7 @@ class PlanController extends Controller
     public function index()
     {
         // dd(auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get());
-        return Inertia::render('Plans', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get()]);
+        return Inertia::render('Plans', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'activities.place', 'users'])->get()]);
     }
 
     /**
