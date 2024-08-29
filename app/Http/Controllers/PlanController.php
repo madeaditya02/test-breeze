@@ -11,8 +11,10 @@ use Illuminate\Http\Request;
 use App\Notifications\InvitePlan;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
 class PlanController extends Controller
 {
@@ -38,7 +40,24 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            Plan::create([
+                'name' => $request->name,
+                'start_date' => date("Y-m-d", strtotime($request->startDate)),
+
+                'end_date' => date("Y-m-d", strtotime($request->endDate)),
+            ]);
+            return to_route('plan.showAll')->with('res', [
+                'message' => 'Success creating plan'
+            ])->setStatusCode(200);
+        } catch (Throwable $e) {
+            return response()->json(
+                [
+                    'message' => 'Something went wrong.' . $e->getMessage(),
+                ],
+                400
+            );
+        }
     }
 
     /**
@@ -88,7 +107,7 @@ class PlanController extends Controller
         if ($user) {
             DB::table('plan_user')->where('user_id', $user->id)->update(['accepted_at' => now()]);
             $user->notifications()->where('data->plan_id', $plan->id)->update(['read_at' => now()]);
-            return redirect('/dashboard/plans/'.$plan->id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
+            return redirect('/dashboard/plans/' . $plan->id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
         } else {
             abort(403);
         }

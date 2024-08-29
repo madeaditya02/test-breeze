@@ -1,4 +1,5 @@
 <script setup>
+import { upFirstLetter } from '@/util';
 import { Link } from '@inertiajs/vue3';
 import moment from 'moment';
 
@@ -22,7 +23,7 @@ defineProps(['story'])
             stroke="currentColor" class="inline size-4 mr-2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
-          <span class="text-sm">{{ moment.utc(story.created_at).fromNow() }}</span>
+          <span class="text-sm">{{ upFirstLetter(moment.utc(story.created_at).fromNow()) }}</span>
         </div>
         <Link :href="`/stories/${story.slug}`" class="text-gray-600">
         {{ story.body.replace(/<[^>]+>/g, '').substring(0, 250) + "..." }}

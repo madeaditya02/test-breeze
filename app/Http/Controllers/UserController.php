@@ -88,7 +88,7 @@ class UserController extends Controller
     public function searchUsers(Request $request)
     {
         $q = $request->input('q');
-        return User::whereLike('name', "%$q%")->orWhereLike('username', "%$q%")->orWhereLike('email', "%$q%")->get(['id', 'name', 'email', 'profile_picture']);
+        return User::whereAny(['name', 'username', 'email'], 'like', "%$q%")->get(['id', 'name', 'email', 'profile_picture']);
     }
     
     public function follow(User $user, Request $request)

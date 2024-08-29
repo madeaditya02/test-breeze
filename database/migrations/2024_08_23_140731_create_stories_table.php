@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('picture')->nullable();
             $table->foreignId('user_id');
             $table->string('plan_id');
-            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
+            // $table->foreign('plan_id')->references('invitation_id')->on('plans')->onDelete('cascade');
             $table->timestamps();
         });
     }

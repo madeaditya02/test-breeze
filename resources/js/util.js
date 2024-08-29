@@ -10,12 +10,9 @@ export const planStatus = (activities) =>
         ? "On Going"
         : "Completed";
 
-export const rangePlan = (activities) => {
-    const start = moment.utc(activities[0].time).local().format("LL");
-    const end = moment
-        .utc(activities[activities.length - 1].time)
-        .local()
-        .format("LL");
+export const rangePlan = (plan, format = "LL") => {
+    const start = moment(plan.start_date).local().format(format);
+    const end = moment(plan.end_date).local().format(format);
     return start == end ? start : `${start} - ${end}`;
 };
 
@@ -89,6 +86,10 @@ export const debounce = (callback, wait) => {
         }, wait);
     };
 };
+
+export function upFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 // moment
 //     .utc(time)
 //     .local()

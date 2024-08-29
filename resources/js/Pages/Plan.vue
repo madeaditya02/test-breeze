@@ -33,7 +33,7 @@ const activities = computed(() => {
 const completedActivities = computed(() => {
   return plan.value.activities.filter(act => moment.utc(act.time).isBefore(moment()))
 })
-const rangeTime = computed(() => rangePlan(plan.value.activities))
+const rangeTime = computed(() => rangePlan(plan.value))
 // console.log(plan.value);
 
 const onlineUsers = ref([])

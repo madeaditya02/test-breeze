@@ -89,7 +89,7 @@ async function publish() {
         return section.form.setError('body', 'Body field is required')
     }
   })
-  mainForm.transform(data => ({ ...data, body: bodyHTML.innerHTML })).post(`/dashboard/plans/${plan.id}/story`)
+  mainForm.transform(data => ({ ...data, body: bodyHTML.innerHTML })).post(`/dashboard/plans/${plan.public_id}/story`)
 }
 const preview = ref(false)
 

@@ -12,7 +12,7 @@ import { humanizeFromNow, planStatus, rangePlan } from '@/util';
 
 defineEmits(['sharePlan']);
 const { plan } = defineProps(['plan'])
-const rangeTime = computed(() => rangePlan(plan.activities))
+const rangeTime = computed(() => rangePlan(plan))
 const currentActivities = computed(() => plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2))
 console.log(currentActivities.value);
 
@@ -21,7 +21,7 @@ console.log(currentActivities.value);
   <div class="px-6 py-5 border rounded-xl flex justify-between flex-col md:flex-row">
     <div>
       <div class="flex items-center gap-4">
-        <Link :href="`/dashboard/plans/${plan.id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
+        <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
         <StatusBadge :status="planStatus(plan.activities)" />
       </div>
       <div class="flex md:items-center gap-4 mt-4 flex-col md:flex-row">

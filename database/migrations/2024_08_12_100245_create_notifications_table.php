@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('type');
             $table->morphs('notifiable');
             $table->text('data');
-            $table->string('plan_id')->nullable();
+            $table->unsignedBigInteger('plan_id')->nullable();
             $table->unsignedBigInteger('sender_id');
             $table->timestamp('read_at')->nullable();
             $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');

@@ -10,10 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Plan extends Model
 {
     use HasFactory;
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $fillable = ['id', 'name'];
-    protected $primaryKey = 'id';
+    // public $incrementing = false;
+    protected $fillable = ['public_id', 'name', 'start_date', 'end_date'];
+    // protected $primaryKey = 'id';
     /**
      * Get all of the activities for the Plan
      *
