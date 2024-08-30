@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('accepted_at')->nullable();
             $table->enum('role', ['Owner', 'Member']);
             $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
         });
     }
 

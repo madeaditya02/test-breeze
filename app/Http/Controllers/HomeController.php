@@ -12,4 +12,12 @@ class HomeController extends Controller
     {
         return Inertia::render('Home');
     }
+    public function stories()
+    {
+        return Inertia::render('Stories');
+    }
+    public function story()
+    {
+        return Inertia::render('Story');
+    }
 }

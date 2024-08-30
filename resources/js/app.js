@@ -12,6 +12,7 @@ import ConfirmationService from "primevue/confirmationservice";
 import Aura from "@primevue/themes/aura";
 import theme from "tailwindcss/defaultTheme";
 import { definePreset } from "@primevue/themes";
+import { CkeditorPlugin } from "@ckeditor/ckeditor5-vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -59,6 +60,7 @@ createInertiaApp({
             })
             .use(ToastService)
             .use(ConfirmationService)
+            .use(CkeditorPlugin)
             .mount(el);
     },
     progress: {

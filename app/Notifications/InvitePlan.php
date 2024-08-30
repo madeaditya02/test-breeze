@@ -31,7 +31,7 @@ class InvitePlan extends Notification
      */
     public function via(object $notifiable): array
     {
-        return [CustomDbChannel::class];
+        return ['mail', CustomDbChannel::class];
         // return ['mail', 'database'];
     }
 
@@ -40,10 +40,12 @@ class InvitePlan extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $name = $notifiable->name;
+        $plan_id = $this->plan->id;
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Accept Invite', url('/'))
-            ->line('Thank you for using our application!');
+            ->line("Hello $name, you have been invited to collaborate on travel planning in our Travel Planner app. Click the button below to accept the invitation.")
+            ->action('Accept Invite', url("/dashboard/plans/$plan_id/join"))
+            ->line('If you did not create an account, no further action is required. Thank you for using our application!');
     }
 
     /**

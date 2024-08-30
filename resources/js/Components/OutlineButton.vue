@@ -7,12 +7,12 @@ defineEmits(['click'])
 </script>
 <template>
   <Link v-if="asLink" :href="asLink"
-    class="inline-flex px-3 py-2 rounded-lg gap-2.5 items-center bg-white border border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition duration-150"
+    class="inline-flex w-fit px-3 py-2 rounded-lg gap-2.5 items-center bg-white border border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition duration-150"
     :class="customClass" @click="event => $emit('click', event)">
   <slot />
   </Link>
   <button v-if="!asLink"
-    class="inline-flex px-3 py-2 rounded-lg gap-2.5 items-center bg-white border border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition duration-150"
+    class="inline-flex w-fit px-3 py-2 rounded-lg gap-2.5 items-center bg-white border border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition duration-150"
     :class="customClass" @click="event => $emit('click', event)">
     <slot />
   </button>

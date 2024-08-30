@@ -10,8 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Plan extends Model
 {
     use HasFactory;
-    protected $fillable = ['id', 'name', 'start_date', 'end_date', 'user_id'];
-    protected $primaryKey = 'id';
+    protected $fillable = ['public_id', 'name', 'start_date', 'end_date'];
     /**
      * Get all of the activities for the Plan
      *
@@ -30,5 +29,15 @@ class Plan extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'plan_user', 'plan_id', 'user_id')->withPivot('role', 'accepted_at');
+    }
+
+    /**
+     * Get all of the stories for the Plan
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
     }
 }

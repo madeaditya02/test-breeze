@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('followers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->string('public_id')->nullable();
+            $table->unsignedBigInteger('follower_id');
+            $table->unsignedBigInteger('following_id');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('followers');
     }
 };

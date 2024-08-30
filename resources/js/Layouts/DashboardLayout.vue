@@ -9,13 +9,15 @@ import { useToast } from "primevue/usetoast";
 import SidebarItem from '@/Components/SidebarItem.vue'
 
 const page = usePage();
-const loggedUser = page.props.auth.user;
+const loggedUser = ref(page.props.auth.user);
 const showNavbar = ref(false)
 // console.log(page.props);
 const toast = useToast();
 onUnmounted(
   router.on('success', (event) => {
     const page = usePage();
+    loggedUser.value = page.props.auth.user;
+    // loggedUser
     const alert = page.props.alert
     if (alert) {
       toast.add({ severity: alert[0], summary: alert[1], detail: alert[2], life: 4000 });
@@ -56,7 +58,15 @@ const confirmLogout = () => {
 
 </script>
 <template>
-  <ConfirmDialog />
+  <ConfirmDialog>
+    <template #icon>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="size-12 text-red-600">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+      </svg>
+    </template>
+  </ConfirmDialog>
   <nav
     class="w-[320px] max-w-[calc(100%-80px)] bg-blue-lighter px-8 py-10 fixed left-0 top-0 bottom-0 z-30 transition-all duration-200"
     :class="showNavbar ? 'ml-0' : '-ml-[320px] lg:ml-0'">
@@ -128,6 +138,15 @@ const confirmLogout = () => {
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
+          </svg>
+        </template>
+      </SidebarItem>
+      <SidebarItem to="/dashboard/stories" text="Stories" :isActive="route().current() == 'stories' ? true : false">
+        <template #icon>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
           </svg>
         </template>
       </SidebarItem>
