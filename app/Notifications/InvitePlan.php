@@ -41,9 +41,9 @@ class InvitePlan extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Accept Invite', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Accept Invite', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -58,8 +58,8 @@ class InvitePlan extends Notification
             'plan_id' => $this->plan->id,
             'plan_name' => $this->plan->name,
             'sender_id' => $this->user->id,
-            'plan_start' => $this->plan->activities[0]->time,
-            'plan_end' => $this->plan->activities[$this->plan->activities->count() - 1]->time
+            'plan_start' => $this->plan->start_date,
+            'plan_end' => $this->plan->end_date
         ];
     }
 }
