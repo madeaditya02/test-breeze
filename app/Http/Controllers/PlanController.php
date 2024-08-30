@@ -22,7 +22,6 @@ class PlanController extends Controller
      */
     public function index()
     {
-        // dd(auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get());
         return Inertia::render('Plans', ['plans' => Auth::user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get()]);
     }
 
@@ -40,15 +39,16 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         try {
-            Plan::create([
-                'name' => $request->name,
-                'start_date' => date("Y-m-d", strtotime($request->startDate)),
+            $createdPlan = Plan::create(
+                [
+                    'name' => $request->name,
+                    'start_date' => date("Y-m-d", strtotime($request->startDate)),
+                    'end_date' => date("Y-m-d", strtotime($request->endDate)),
+                ]
+            );
+            $createdPlan->users()->attach($request->userId, ['accepted_at' => date("Y-m-d H:i:s")]);
 
-                'end_date' => date("Y-m-d", strtotime($request->endDate)),
-            ]);
-            return to_route('plan.showAll')->with('res', [
-                'message' => 'Success creating plan'
-            ])->setStatusCode(200);
+            return to_route('plan.showAll');
         } catch (Throwable $e) {
             return response()->json(
                 [

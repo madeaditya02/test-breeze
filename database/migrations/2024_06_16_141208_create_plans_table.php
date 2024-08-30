@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
             $table->string('invitation_id')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('user');
         });
     }
 

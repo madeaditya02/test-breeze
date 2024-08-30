@@ -40,8 +40,8 @@ const showShare = ref(false)
   </div>
   <div class="recommendations">
     <swiper :slidesPerView="'auto'" :spaceBetween="30" :pagination="{
-      clickable: true,
-    }">
+    clickable: true,
+  }">
       <swiper-slide v-for="i in 7">
         <destination-card @show-modal="showModal = true" @show-new-plan-modal="showNewPlanModal = true" />
       </swiper-slide>
@@ -56,8 +56,8 @@ const showShare = ref(false)
   </div>
   <div class="recommendations">
     <swiper :slidesPerView="'auto'" :spaceBetween="10" :pagination="{
-      clickable: true,
-    }">
+    clickable: true,
+  }">
       <swiper-slide v-for="i in 7">
         <destination-card @show-modal="showModal = true" @show-new-plan-modal="showNewPlanModal = true" />
       </swiper-slide>

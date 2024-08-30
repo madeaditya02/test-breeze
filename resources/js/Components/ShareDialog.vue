@@ -14,8 +14,8 @@ const { props: { auth } } = usePage()
 const visible = defineModel('visible')
 const users = ref([])
 onMounted(async () => {
-  users.value = (await axios.post('/search-users', {})).data
-  // console.log(users.value);
+  users.value = (await axios.post('/search-users', {})).data;
+  console.log(props.plan.users);
 })
 const filteredUsers = ref([])
 const selectedUser = ref(null)
@@ -29,8 +29,8 @@ async function inviteUser() {
   if (res.status == 200)
     toast.add({ severity: 'success', summary: 'Invite Friend', detail: 'Invitation successfully sended', life: 4000 });
   selectedUser.value = null
-  // console.log(res);
 }
+
 const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
 const isOwner = computed(() => {
   return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id

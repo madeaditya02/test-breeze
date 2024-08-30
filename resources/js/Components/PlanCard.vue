@@ -14,7 +14,6 @@ defineEmits(['sharePlan']);
 const { plan } = defineProps(['plan'])
 const rangeTime = computed(() => rangePlan(plan.activities))
 const currentActivities = computed(() => plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2))
-console.log(currentActivities.value);
 
 </script>
 <template>

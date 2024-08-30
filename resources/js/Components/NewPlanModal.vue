@@ -7,7 +7,7 @@ import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
 
-defineProps(['show'])
+defineProps(['show', 'user']);
 const show = defineModel('show')
 
 const rangePlan = ref([new Date(), '']);
@@ -20,8 +20,15 @@ watch(show, s => {
   rangePlan.value = ['', '']
 })
 
-function createPlan(form) {
-  axios;
+function createPlan(form, userId) {
+  form.userId = userId;
+  axios.post('/dashboard/plan', form)
+    .then(function (response) {
+      show.value = false;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 </script>
 <template>
@@ -52,8 +59,9 @@ function createPlan(form) {
           <DatePicker v-model="formData.endDate" :min-date="formData.startDate" :manual-input="false"
             placeholder="mm/dd/yyyy">
           </DatePicker>
+          <input type="hidden" v-model="formData.userId">
         </div>
-        <PlusButton @click="createPlan(formData)">Add Plan</PlusButton>
+        <PlusButton @click="createPlan(formData, $page.props.auth.user.id)">Add Plan</PlusButton>
       </div>
     </template>
   </Dialog>

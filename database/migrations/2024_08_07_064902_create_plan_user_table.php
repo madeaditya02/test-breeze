@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('plan_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('plan_id');
+            $table->unsignedBigInteger('plan_id');
             $table->timestamp('accepted_at')->nullable();
             $table->enum('role', ['Owner', 'Member']);
             $table->timestamps();

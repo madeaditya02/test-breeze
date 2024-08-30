@@ -49,6 +49,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function plans(): BelongsToMany
     {
-        return $this->belongsToMany(Plan::class);
+        return $this->belongsToMany(Plan::class, 'plan_user', 'user_id', 'plan_id')->withPivot('role', 'accepted_at');
     }
 }
