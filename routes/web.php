@@ -22,7 +22,7 @@ Route::get('/stories', [StoryController::class, 'index'])->name('stories');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show']);
 Route::get('/explore', [PlaceController::class, 'guest'])->name('explore-guest');
 Route::get('/@{user:username}', [UserController::class, 'profile']);
-    
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');

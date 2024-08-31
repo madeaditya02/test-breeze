@@ -10,7 +10,9 @@ import moment from "moment";
 import Rating from "primevue/rating";
 import { placePhoto } from "@/util";
 
-defineEmits(['delete'])
+defineEmits(['delete', 'select-edit'])
+const showEdit = ref(false);
+
 const props = defineProps(['activity'])
 const planAction = ref()
 function showPlanAction(event) {
@@ -47,12 +49,12 @@ const rating = ref()
         </button>
         <Popover v-if="isActive" ref="planAction">
           <div class="flex">
-            <PencilSquareIconButton />
+            <PencilSquareIconButton @click="() => { $emit('select-edit', activity); showEdit = true }" />
             <DeletePlanButton @delete="$emit('delete')" />
           </div>
         </Popover>
         <div v-if="isActive" class="hidden lg:flex gap-3">
-          <PencilSquareIconButton />
+          <PencilSquareIconButton @click="() => { $emit('select-edit', activity); showEdit = true }" />
           <DeletePlanButton @delete="$emit('delete')" />
         </div>
       </div>

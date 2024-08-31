@@ -51,8 +51,7 @@ class PlanController extends Controller
                 ]
             );
             $createdPlan->users()->attach($request->userId, ['accepted_at' => date("Y-m-d H:i:s")]);
-            return response()->json($createdPlan);
-            return to_route('plan.index');
+            return response()->json($createdPlan, 200);
         } catch (Throwable $e) {
             return response()->json(
                 [
@@ -171,6 +170,7 @@ class PlanController extends Controller
         $activity =  DB::table('activities')
             ->where('plan_id', '=', $plan->id)
             ->join('places', 'activities.place_id', '=', 'places.id')
+            ->select(['activities.id', 'place_id', 'plan_id', 'time', 'name', 'types', 'address', 'province', 'latitude', 'longitude', 'rating', 'url', 'summary', 'photo'])
             ->get();
         return $activity;
     }

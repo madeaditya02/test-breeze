@@ -17,12 +17,12 @@ return new class extends Migration
             $table->json('types')->nullable();
             $table->string('address')->nullable();
             $table->string('province')->nullable();
-            $table->double('latitude');
-            $table->double('longitude');
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
             $table->double('rating')->nullable();
             $table->string('url')->nullable();
             $table->text('summary')->nullable();
-            $table->string('photo')->nullable();      
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }
