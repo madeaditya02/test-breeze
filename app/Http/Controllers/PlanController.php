@@ -51,12 +51,7 @@ class PlanController extends Controller
                 ]
             );
             $createdPlan->users()->attach($request->userId, ['accepted_at' => date("Y-m-d H:i:s")]);
-            return response()->json(
-                [
-                    'message' => 'Success',
-                ],
-                200
-            );
+            return response()->json($createdPlan, 200);
         } catch (Throwable $e) {
             return response()->json(
                 [

@@ -22,12 +22,26 @@ import TabPanel from "primevue/tabpanel";
 import TabPanels from "primevue/tabpanels";
 import Tabs from "primevue/tabs";
 import Textarea from "primevue/textarea";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import NewPlanActivityModal from "./NewPlanActivityModal.vue";
 
-const { provinces } = defineProps(['provinces'])
+const { provinces } = defineProps(['provinces', 'plans'])
 
 const showModal = ref(false);
 const showNewPlanModal = ref(false);
+const selectedPlace = ref(null)
+
+function selectPlaceExisting(place) {
+  showModal.value = true
+  selectedPlace.value = place
+}
+function selectPlaceNew(place) {
+  showNewPlanModal.value = true
+  selectedPlace.value = place
+}
+
+watch(showModal, val => !val ? selectedPlace.value = null : null)
+watch(showNewPlanModal, val => !val ? selectedPlace.value = null : null)
 
 const search = ref('');
 const loadingSearch = ref(false);
@@ -122,7 +136,7 @@ async function getAI() {
     </TabList>
     <TabPanels>
       <TabPanel value="0">
-        <FeaturedPlaces :provinces="provinces" />
+        <FeaturedPlaces :provinces="provinces" :plans="plans" />
       </TabPanel>
       <TabPanel value="1">
         <form action="" @submit.prevent="getAI">
@@ -131,8 +145,8 @@ async function getAI() {
           <PrimaryButton>Search</PrimaryButton>
         </form>
         <div class="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <DestinationCard v-for="place in AISearchResults" :place="place" @show-modal="showModal = true"
-            @show-new-plan-modal="showNewPlanModal = true" />
+          <DestinationCard v-for="place in AISearchResults" :place="place" @show-modal="selectPlaceExisting(place)"
+            @show-new-plan-modal="selectPlaceNew(place)" />
         </div>
         <Loading v-if="loadingAI" />
       </TabPanel>
@@ -151,14 +165,14 @@ async function getAI() {
           </InputGroup>
         </form>
         <div class="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <DestinationCard v-for="place in placesSearch" :place="place" @show-modal="showModal = true"
-            @show-new-plan-modal="showNewPlanModal = true" />
+          <DestinationCard v-for="place in placesSearch" :place="place" @show-modal="selectPlaceExisting(place)"
+            @show-new-plan-modal="selectPlaceNew(place)" />
         </div>
         <Loading v-if="loadingSearch" />
       </TabPanel>
     </TabPanels>
   </Tabs>
 
-  <ExistingPlanModal v-model:show="showModal" />
-  <NewPlanModal v-model:show="showNewPlanModal" />
+  <ExistingPlanModal v-model:show="showModal" :plans="plans" :selected-place="selectedPlace" />
+  <NewPlanActivityModal v-model:show="showNewPlanModal" :selected-place="selectedPlace" />
 </template>

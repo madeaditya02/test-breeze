@@ -1,13 +1,14 @@
 <script setup>
 import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import PlusButton from "@/Components/PlusButton.vue";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
 import Button from "primevue/button";
 
-defineProps(['show', 'user']);
+const props = defineProps(['show', 'user', 'selectedPlace']);
 const show = defineModel('show')
 
 const rangePlan = ref([new Date(), '']);
@@ -15,19 +16,25 @@ const formData = ref({
   name: '',
   startDate: new Date(),
   endDate: new Date(),
+  timeActivity: ''
 })
 watch(show, s => {
   rangePlan.value = ['', '']
 })
 
 const loading = ref(false)
-function createPlan(form, userId) {
-  form.userId = userId;
+async function createPlan(form, userId) {
+  if (loading.value) return
   loading.value = true
+  form.userId = userId;
   axios.post('/dashboard/plan', form)
-    .then(function (response) {
+    .then(async function (response) {
       // show.value = false;
-      router.visit(`/dashboard/plans/${response.data.public_id}`)
+      const plan = response.data
+      await axios.post(`/dashboard/plans/${plan.id}/activities`, {
+        data: { time: formData.value.timeActivity, place: props.selectedPlace },
+      })
+      router.visit(`/dashboard/plans/${plan.public_id}`)
     })
     .catch(function (error) {
       console.log(error);
@@ -64,7 +71,15 @@ function createPlan(form, userId) {
           </DatePicker>
           <input type="hidden" v-model="formData.userId">
         </div>
-        <Button :disabled="loading" @click="createPlan(formData, $page.props.auth.user.id)">
+        <div class="flex gap-2.5 items-center mb-5">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <DatePicker v-model="formData.timeActivity" showTime hourFormat="24" :min-date="new Date(formData.startDate)"
+            :max-date="new Date(formData.endDate)" placeholder="mm/dd/yyyy --:--"></DatePicker>
+        </div>
+        <Button @click="createPlan(formData, $page.props.auth.user.id)" :disabled="loading">
           <svg v-if="!loading" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6 inline">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

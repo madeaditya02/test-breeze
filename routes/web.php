@@ -30,7 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('destroy');
     });
 
-
     Route::get('/plans', function () {
         return Inertia::render('Rooms', ['plans' => Plan::all()]);
     });
@@ -54,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/activities/{plan:public_id}', [PlanController::class, 'getActivities'])->name('get-activities');
 
         Route::get('/plans', [PlanController::class, 'index'])->name('plan.index');
-        Route::get('/plan/{plan:public_id}', [PlanController::class, 'show'])->name('plan.detail');
+        Route::get('/plans/{plan:public_id}', [PlanController::class, 'show'])->name('plan.detail');
         Route::resource('plan', PlanController::class)->only(['store', 'update', 'destroy']);
         Route::name('plan.')->group(function () {
             Route::put('/plan/{plan:public_id}/extend', [PlanController::class, 'extendPlan'])->name('extend');
