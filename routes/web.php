@@ -16,17 +16,9 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvitationController;
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
 
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/stories', [StoryController::class, 'index']);
+Route::get('/stories', [StoryController::class, 'index'])->name('stories');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show']);
 Route::get('/explore', [PlaceController::class, 'guest'])->name('explore-guest');
 Route::get('/@{user:username}', [UserController::class, 'profile']);
@@ -38,15 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('destroy');
     });
 
-    Route::name('plan.')->group(function () {
-        Route::get('/dashboard/plans', [PlanController::class, 'index'])->name('showAll');
-        Route::post('/dashboard/plan', [PlanController::class, 'store'])->name('create');
-        Route::get('/dashboard/plans/{plan:public_id}', [PlanController::class, 'show'])->name('detail');
-        Route::get('/dashboard/plans/{plan:public_id}/join', [PlanController::class, 'join'])->name('join');
-        Route::post('/dashboard/plans/{plan:public_id}/invite', [PlanController::class, 'invite'])->name('invite');
-        Route::get('/dashboard/plans/{plan:public_id}/story', [StoryController::class, 'create'])->name('story');
-        Route::post('/dashboard/plans/{plan:public_id}/story', [StoryController::class, 'store'])->name('publish-story');
-    });
 
     Route::get('/plans', function () {
         return Inertia::render('Rooms', ['plans' => Plan::all()]);
@@ -57,16 +40,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('OnlineRoom', ['plan' => $plan]);
     });
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/explore', [PlaceController::class, 'explore'])->name('explore');
-    Route::get('/dashboard/stories', [StoryController::class, 'dashboard'])->name('dashboard-stories');
-    Route::delete('/dashboard/stories/{id}', [StoryController::class, 'destroy'])->name('delete-story');
-    Route::get('/dashboard/invitations', [InvitationController::class, 'index'])->name('invitations');
-    Route::get('/dashboard/account-settings', [UserController::class, 'accountSettings'])->name('account-settings');
-    Route::post('/dashboard/account-settings', [UserController::class, 'submitSettings']);
-    Route::get('/dashboard/profile-settings', [UserController::class, 'profileSettings'])->name('profile-settings');
-    Route::post('/dashboard/profile-settings', [UserController::class, 'updateProfile']);
-    Route::resource('/dashboard/plans/{plan:id}/activities', ActivityController::class);
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/explore', [PlaceController::class, 'explore'])->name('explore');
+        Route::get('/stories', [StoryController::class, 'dashboard'])->name('dashboard-stories');
+        Route::delete('/stories/{id}', [StoryController::class, 'destroy'])->name('delete-story');
+        Route::get('/invitations', [InvitationController::class, 'index'])->name('invitations');
+        Route::get('/account-settings', [UserController::class, 'accountSettings'])->name('account-settings');
+        Route::post('/account-settings', [UserController::class, 'submitSettings']);
+        Route::get('/profile-settings', [UserController::class, 'profileSettings'])->name('profile-settings');
+        Route::post('/profile-settings', [UserController::class, 'updateProfile']);
+        Route::resource('/plans/{plan:id}/activities', ActivityController::class);
+        Route::get('/activities/{plan:public_id}', [PlanController::class, 'getActivities'])->name('get-activities');
+
+        Route::get('/plans', [PlanController::class, 'index'])->name('plan.index');
+        Route::get('/plan/{plan:public_id}', [PlanController::class, 'show'])->name('plan.detail');
+        Route::resource('plan', PlanController::class)->only(['store', 'update', 'destroy']);
+        Route::name('plan.')->group(function () {
+            Route::put('/plan/{plan:public_id}/extend', [PlanController::class, 'extendPlan'])->name('extend');
+            Route::get('/plans/{plan:public_id}/join', [PlanController::class, 'join'])->name('join');
+            Route::post('/plans/{plan:public_id}/invite', [PlanController::class, 'invite'])->name('invite');
+            Route::get('/plans/{plan:public_id}/story', [StoryController::class, 'create'])->name('story');
+            Route::post('/plans/{plan:public_id}/story', [StoryController::class, 'store'])->name('publish-story');
+        });
+    });
     Route::post('/upload-image-body', [StoryController::class, 'uploadImageBody']);
     Route::get('/search-users', [UserController::class, 'searchUsers']);
     Route::post('/users/{user}/follow', [UserController::class, 'follow']);

@@ -26,6 +26,7 @@ async function inviteUser() {
     toast.add({ severity: 'success', summary: 'Invite Friend', detail: 'Invitation successfully sended', life: 4000 });
   selectedUser.value = null
 }
+
 const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
 const isOwner = computed(() => {
   return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id

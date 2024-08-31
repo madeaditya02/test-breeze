@@ -27,6 +27,9 @@ const currentPlans = computed(() => props.plans.filter(plan => planStatus(plan.a
     <PlanCard v-for="plan in plans" @share-plan="showShare = true" :plan="plan" />
   </div>
 
-  <ShareDialog v-if="plans.length > 0" v-model:visible="showShare" :plan="plans[0]" />
-  <NewPlanModal v-model:show="showNewPlanModal" />
+
+  <div v-if="plans.length > 0" v-for="plan in plans">
+    <ShareDialog v-model:visible="showShare" :plan="plan" />
+  </div>
+  <NewPlanModal v-model:show="showNewPlanModal" :user="$page.props.auth.user" />
 </template>

@@ -52,15 +52,15 @@ class ActivityController extends Controller
             'longitude' => $data['place']['location']['longitude'],
             'rating' => $data['place']['rating'],
             'url' => $data['place']['googleMapsUri'],
-            'summary' => $data['place']['editorialSummary']['text'],
+            'summary' => $data['place']['editorialSummary']['text'] ?? '',
             'photo' => $data['place']['photos'][0]['name'],
         ], ['id']);
-        // array_push($activities, Activity::create($newActivity));
+
         Activity::create($newActivity);
         $updated = $plan->activities()->with('place')->get();
         broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
-        // UpdateActivity::dispatch($activities, $data['plan_id']);
-        return response()->json($updated);
+
+        return back();
     }
 
     /**

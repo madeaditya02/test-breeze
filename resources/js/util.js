@@ -25,8 +25,7 @@ export const humanizeFromNow = (time) =>
     });
 
 export const placePhoto = (name) =>
-    `https://places.googleapis.com/v1/${name}/media?key=${
-        import.meta.env.VITE_MAPS_API_KEY
+    `https://places.googleapis.com/v1/${name}/media?key=${import.meta.env.VITE_MAPS_API_KEY
     }&maxHeightPx=400&maxWidthPx=600`;
 
 export const previewImage = (file) => URL.createObjectURL(file);

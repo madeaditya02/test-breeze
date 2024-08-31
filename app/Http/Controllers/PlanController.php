@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Throwable;
 
 class PlanController extends Controller
@@ -24,7 +25,7 @@ class PlanController extends Controller
     public function index()
     {
         // dd(auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get());
-        return Inertia::render('Plans', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'activities.place', 'users'])->get()]);
+        return Inertia::render('Plans', ['plans' => Auth::user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users', 'activities.place'])->get()]);
     }
 
     /**
@@ -41,15 +42,17 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         try {
-            Plan::create([
-                'name' => $request->name,
-                'start_date' => date("Y-m-d", strtotime($request->startDate)),
+            $createdPlan = Plan::create(
+                [
+                    'name' => $request->name,
+                    'start_date' => date("Y-m-d", strtotime($request->startDate)),
+                    'end_date' => date("Y-m-d", strtotime($request->endDate)),
+                    'public_id' => Str::uuid(),
+                ]
+            );
+            $createdPlan->users()->attach($request->userId, ['accepted_at' => date("Y-m-d H:i:s")]);
 
-                'end_date' => date("Y-m-d", strtotime($request->endDate)),
-            ]);
-            return to_route('plan.showAll')->with('res', [
-                'message' => 'Success creating plan'
-            ])->setStatusCode(200);
+            return to_route('plan.index');
         } catch (Throwable $e) {
             return response()->json(
                 [
@@ -65,7 +68,6 @@ class PlanController extends Controller
      */
     public function show(Plan $plan)
     {
-        // dd($plan->users->contains('id', auth()->id()));
         if (!Gate::allows('edit-plan', $plan)) {
             abort(403);
         }
@@ -90,7 +92,27 @@ class PlanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            Plan::where('id', $id)->update([
+                'name' => $request->name,
+                'start_date' => date("Y-m-d", strtotime($request->startDate)),
+                'end_date' => date("Y-m-d", strtotime($request->endDate)),
+            ]);
+
+            return response()->json(
+                [
+                    'message' => 'Success'
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'message' => 'Something went wrong. ' . $err->getMessage(),
+                ],
+                400
+            );
+        }
     }
 
     /**
@@ -98,7 +120,23 @@ class PlanController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            Plan::find($id)->delete();
+
+            return response()->json(
+                [
+                    'message' => 'Success'
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'message' => 'Something went wrong. ' . $err->getMessage(),
+                ],
+                400
+            );
+        }
     }
 
     public function join(Plan $plan)
@@ -107,7 +145,7 @@ class PlanController extends Controller
         if ($user) {
             DB::table('plan_user')->where('user_id', $user->id)->update(['accepted_at' => now()]);
             $user->notifications()->where('data->plan_id', $plan->id)->update(['read_at' => now()]);
-            return redirect('/dashboard/plans/' . $plan->id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
+            return redirect('/dashboard/plan/' . $plan->id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
         } else {
             abort(403);
         }
@@ -126,5 +164,20 @@ class PlanController extends Controller
                 // $userexist->notifications()->where('plan_id', $plan)->latest()->first()->update(['updated_at', now()]);
             }
         }
+    }
+
+    public function getActivities(Plan $plan)
+    {
+        $activity =  DB::table('activities')
+            ->where('plan_id', '=', $plan->id)
+            ->join('places', 'activities.place_id', '=', 'places.id')
+            ->get();
+        return $activity;
+    }
+
+    public function extendPlan(Plan $plan, Request $request)
+    {
+        $plan->end_date = date("Y-m-d", strtotime($request->endDate));
+        $plan->save();
     }
 }

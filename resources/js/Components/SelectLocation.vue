@@ -59,7 +59,6 @@ const loadingAI = ref(false)
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
 async function getAI() {
-  console.log(prompt.value);
   if (loadingAI.value)
     return
   AISearchResults.value = []
@@ -69,9 +68,7 @@ async function getAI() {
   const response = await result.response;
   const text = response.text();
   const places = JSON.parse(text);
-  console.log(places);
   places.forEach(async place => {
-    // console.log(place);
     const res = (await axios.post('https://places.googleapis.com/v1/places:searchText', {
       textQuery: place,
     }, {
@@ -80,7 +77,6 @@ async function getAI() {
         "X-Goog-FieldMask": "*"
       }
     }))
-    console.log(res);
     AISearchResults.value.push(res.data.places[0]);
     // return res.data.places[0]
   });
@@ -120,13 +116,13 @@ async function getAI() {
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                   </svg>
-                  <span class="hidden md:inline">Submit</span>
+                  <span class="hidden md:inline">Search</span>
                 </Button>
               </InputGroup>
             </form>
             <PlaceCard v-for="place in searchResults" :place="place" @click="() => selectedPlace = place"
               class="hover:bg-gray-100 cursor-pointer" :key="place.id"
-              :class="selectedPlace.id == place.id ? 'bg-gray-100' : 'bg-white'" />
+              :class="selectedPlace.id == place.id ? 'bg-gray-300' : 'bg-white'" />
             <Loading v-if="loading" />
             <!-- <div class="py-4 border-b flex gap-4 hover:bg-gray-100 cursor-pointer" v-for="place in searchResults"
               @click="selectedPlace = place" :class="selectedPlace.id == place.id ? 'bg-gray-100' : 'bg-white'">
@@ -152,7 +148,7 @@ async function getAI() {
             </form>
             <PlaceCard v-for="place in AISearchResults" :place="place" @click="() => selectedPlace = place"
               class="hover:bg-gray-100 cursor-pointer" :key="place.id"
-              :class="selectedPlace.id == place.id ? 'bg-gray-100' : 'bg-white'" />
+              :class="selectedPlace.id == place.id ? 'bg-gray-300' : 'bg-white'" />
             <Loading v-if="loadingAI" />
           </TabPanel>
         </TabPanels>

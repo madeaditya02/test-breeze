@@ -43,9 +43,9 @@ class InvitePlan extends Notification
         $name = $notifiable->name;
         $plan_id = $this->plan->public_id;
         return (new MailMessage)
-                    ->line("Hello $name, you have been invited to collaborate on travel planning in our Travel Planner app. Click the button below to accept the invitation.")
-                    ->action('Accept Invite', url("/dashboard/plans/$plan_id/join"))
-                    ->line('If you did not create an account, no further action is required. Thank you for using our application!');
+            ->line("Hello $name, you have been invited to collaborate on travel planning in our Travel Planner app. Click the button below to accept the invitation.")
+            ->action('Accept Invite', url("/dashboard/plans/$plan_id/join"))
+            ->line('If you did not create an account, no further action is required. Thank you for using our application!');
     }
 
     /**
@@ -60,8 +60,8 @@ class InvitePlan extends Notification
             'plan_id' => $this->plan->id,
             'plan_name' => $this->plan->name,
             'sender_id' => $this->user->id,
-            'plan_start' => $this->plan->activities[0]->time,
-            'plan_end' => $this->plan->activities[$this->plan->activities->count() - 1]->time
+            'plan_start' => $this->plan->start_date,
+            'plan_end' => $this->plan->end_date
         ];
     }
 }

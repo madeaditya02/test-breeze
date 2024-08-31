@@ -1,33 +1,32 @@
 <script setup>
 import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Button from "primevue/button";
 import PlusButton from "@/Components/PlusButton.vue";
-import { ref, watch } from "vue";
-import { router } from "@inertiajs/vue3";
+import { ref, watch, defineEmits } from "vue";
 import axios from "axios";
 
-defineProps(['show', 'user']);
+const props = defineProps(['show', 'plan']);
 const show = defineModel('show')
+const emit = defineEmits(['submitted'])
 
 const rangePlan = ref([new Date(), '']);
 const formData = ref({
-  name: '',
-  startDate: new Date(),
-  endDate: new Date(),
+  name: props.plan.name,
+  startDate: new Date(props.plan.start_date),
+  endDate: new Date(props.plan.end_date),
 })
 watch(show, s => {
   rangePlan.value = ['', '']
 })
 
-function createPlan(form, userId) {
-  form.userId = userId;
-  axios.post('/dashboard/plan', form)
-    .then(function (response) {
+function createPlan(form) {
+  axios.put(`/dashboard/plan/${props.plan.id}`, form)
+    .then(() => {
       show.value = false;
-    })
-    .catch(function (error) {
-      console.log(error);
+      emit('submitted');
+    }).catch((err) => {
+      console.log(err);
     });
 }
 </script>
@@ -61,7 +60,7 @@ function createPlan(form, userId) {
           </DatePicker>
           <input type="hidden" v-model="formData.userId">
         </div>
-        <PlusButton @click="createPlan(formData, $page.props.auth.user.id)">Add Plan</PlusButton>
+        <Button @click="createPlan(formData)">Update</Button>
       </div>
     </template>
   </Dialog>
