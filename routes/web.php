@@ -13,18 +13,16 @@ use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvitationController;
 
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories', [StoryController::class, 'index'])->name('stories');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show']);
+Route::get('/explore', [PlaceController::class, 'guest'])->name('explore-guest');
 Route::get('/@{user:username}', [UserController::class, 'profile']);
-
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
+    
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::name('profile.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('edit');
@@ -43,12 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('dashboard')->group(function () {
-
-        Route::get('/', function () {
-            return Inertia::render('MyDashboard', ['plans' => auth()->user()->plans()->wherePivotNotNull('accepted_at')->whereHas('activities', function ($query) {
-                $query->where('time', '>=', now()->startOfDay());
-            })->with(['activities', 'activities.place', 'users'])->get()]);
-        })->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/explore', [PlaceController::class, 'explore'])->name('explore');
         Route::get('/stories', [StoryController::class, 'dashboard'])->name('dashboard-stories');
         Route::delete('/stories/{id}', [StoryController::class, 'destroy'])->name('delete-story');
@@ -72,7 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
     Route::post('/upload-image-body', [StoryController::class, 'uploadImageBody']);
-    Route::post('/search-users', [UserController::class, 'searchUsers']);
+    Route::get('/search-users', [UserController::class, 'searchUsers']);
     Route::post('/users/{user}/follow', [UserController::class, 'follow']);
     Route::post('/users/{user}/follower', [UserController::class, 'getFollower']);
     Route::post('/users/{user}/following', [UserController::class, 'getFollowing']);

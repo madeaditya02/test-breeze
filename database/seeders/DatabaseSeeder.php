@@ -65,6 +65,7 @@ class DatabaseSeeder extends Seeder
             'id' => "ChIJwRIJzsFB0i0RQdXwd3GvJvA",
             'name' => "Sanur",
             'address' => "Sanur, Bali, Indonesia",
+            'province' => "Bali",
             'types' => json_encode(["natural_feature", "establishment"]),
             "latitude" => -8.7071782,
             "longitude" => 115.26262360000001,
@@ -77,6 +78,7 @@ class DatabaseSeeder extends Seeder
             'id' => "ChIJJ_QeCxRF0i0RPuU1Y3d-RuI",
             'name' => "Balangan Beach",
             'address' => "Balangan Beach, South Kuta, Badung Regency, Bali, Indonesia",
+            'province' => "Bali",
             'types' => json_encode(["natural_feature", "establishment"]),
             "latitude" => -8.7920477999999989,
             "longitude" => 115.12341719999999,
@@ -92,5 +94,18 @@ class DatabaseSeeder extends Seeder
             'place_id' => $place2->id,
             'time' => now()->add(8, 'hours')
         ]]);
+
+        $plan2 = Plan::create([
+            // 'id' => $id1,
+            'name' => 'Trip to Bali 2',
+            'start_date' => now()->add(7, 'days'),
+            'end_date' => now()->add(13, 'days'),
+            'public_id' => (string) Str::uuid()
+        ]);
+        $plan2->users()->attach($user2->id, ['accepted_at' => now(), 'role' => 'Owner']);
+        $plan2->activities()->create([
+            'place_id' => $place1->id,
+            'time' => now()->add(3, 'hours')
+        ]);
     }
 }

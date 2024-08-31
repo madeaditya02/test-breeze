@@ -2,7 +2,7 @@
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton2.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
@@ -65,7 +65,8 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="!px-4 !py-2 !text-xs !font-semibold !uppercase"
+                    :class="{ '!opacity-25': form.processing }" :disabled="form.processing">
                     Reset Password
                 </PrimaryButton>
             </div>
