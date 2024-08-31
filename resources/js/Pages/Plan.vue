@@ -1,87 +1,83 @@
 <script setup>
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import ActivityCard from '@/Components/ActivityCard.vue';
 import DeletePlanButton from '@/Components/DeletePlanButton.vue';
 import FavoriteButton from '@/Components/FavoriteButton.vue';
-import MapComponent from '@/Components/MapComponent.vue';
 import PencilSquareIconButton from '@/Components/PencilSquareIconButton.vue';
+import MapComponent from '@/Components/MapComponent.vue';
 import PlaceCard from '@/Components/PlaceCard.vue';
 import PlusButton from '@/Components/PlusButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectLocation from '@/Components/SelectLocation.vue';
 import ShareDialog from '@/Components/ShareDialog.vue';
+import EditPlanModal from '@/Components/EditPlanModal.vue';
 import ShareIconButton from '@/Components/ShareIconButton.vue';
-import Stars from '@/Components/Stars.vue';
 import Trivia from '@/Components/Trivia.vue';
+import ExtendPlanDialog from '@/Components/ExtendPlanDialog.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import { placePhoto, rangePlan } from '@/util';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { rangePlan } from '@/util';
+import { useForm, usePage, router } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
-import Dialog from 'primevue/dialog';
 import Popover from 'primevue/popover';
-import Rating from 'primevue/rating';
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
 defineOptions({ layout: DashboardLayout });
 
 const { props: { auth } } = usePage()
 const props = defineProps(['plan']);
 const plan = ref(props.plan);
+
+const planActivity = ref([]);
+
+const getActivity = () => {
+  console.log(plan.value.public_id);
+  return axios.get(`/dashboard/activities/${plan.value.public_id}`)
+    .then((res) => {
+      planActivity.value = res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
 const activities = computed(() => {
-  return plan.value.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment()))
+  return planActivity.value.filter(act => moment.utc(act.time).isSameOrAfter(moment()))
 })
 const completedActivities = computed(() => {
-  return plan.value.activities.filter(act => moment.utc(act.time).isBefore(moment()))
+  return planActivity.value.filter(act => moment.utc(act.time).isBefore(moment()))
 })
 const rangeTime = computed(() => rangePlan(plan.value))
-// console.log(plan.value);
 
 const onlineUsers = ref([])
 onMounted(() => {
+  getActivity();
   window.Echo.join(`plan.${plan.value.id}`)
     .here((users) => {
-      console.log('Online Users ', users);
       onlineUsers.value = users
     })
     .joining((user) => {
-      console.log(user.name);
       onlineUsers.value.push(user)
     })
     .leaving((user) => {
-      // console.log(user.name);
       onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
     })
     .listen('UpdateActivity', e => {
-      // console.log('Hello');
-      // console.log(e);
       plan.value.activities = e.activities
     })
     .error((error) => {
       console.error(error);
     });
-  console.log(`plan.${plan.value.id}`);
 })
 
 onUnmounted(() => {
-  console.log('Unmounted');
   Echo.leave(`plan.${plan.value.id}`)
 })
 
 const showAddPlan = ref(false);
-const rating = ref(null);
 const showShare = ref(false);
+const showExtend = ref(false);
+const showEditPlan = ref(false);
 const showMap = ref(true);
-
-async function deleteActivity(id) {
-  plan.value.activities = plan.value.activities.filter(act => act.id != id)
-  const res = await axios.delete(`/dashboard/plans/${plan.value.id}/activities/${id}`, {
-    data: {
-      activities: plan.value.activities,
-      // plan_id: plan.value.id
-    }
-  })
-  // console.log(res);
-}
 
 const planAction = ref()
 function showPlanAction(event) {
@@ -92,9 +88,11 @@ const isOwner = computed(() => {
   return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
 })
 
+
 // Location
 const selectLocation = ref(false)
 function handleSelectedLocation(place) {
+  console.log(place);
   // Untuk Add Activity
   if (showAddPlan) {
     newActivity.place = place
@@ -114,15 +112,25 @@ async function submitActivity() {
     data: newActivity.data(),
     activities: plan.value.activities
   })
-  showAddPlan.value = false
-  newActivity.reset()
-  console.log(res);
+  showAddPlan.value = false;
+  newActivity.reset();
+  getActivity();
 }
+
+async function deleteActivity(id) {
+  plan.value.activities = plan.value.activities.filter(act => act.id != id)
+  const res = await axios.delete(`/dashboard/plans/${plan.value.id}/activities/${id}`, {
+    data: {
+      activities: plan.value.activities,
+    }
+  })
+}
+
 </script>
 <template>
   <div class="flex justify-between">
     <div>
-      <h1 class="text-3xl font-semibold">Trip to Bali</h1>
+      <h1 class="text-3xl font-semibold">{{ plan.name }}</h1>
       <div class="flex gap-3 items-center my-5">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-6">
@@ -151,13 +159,13 @@ async function submitActivity() {
       <Popover ref="planAction" v-if="isOwner">
         <div class="flex">
           <share-icon-button v-if="isOwner" @share="showShare = true" />
-          <FavoriteButton />
+          <PencilSquareIconButton @click="showEditPlan = true" />
           <DeletePlanButton v-if="isOwner" />
         </div>
       </Popover>
       <div :class="isOwner ? 'hidden lg:flex gap-3' : ''">
         <share-icon-button v-if="isOwner" @share="showShare = true" />
-        <FavoriteButton />
+        <PencilSquareIconButton @click="showEditPlan = true" />
         <DeletePlanButton v-if="isOwner" />
       </div>
       <div class="hidden md:flex">
@@ -165,44 +173,20 @@ async function submitActivity() {
           <img v-for="(user, i) in onlineUsers" :src="user.profile_picture" alt=""
             class="w-[48px] h-[48px] inline-block rounded-full relative last:!right-0 shadow-md"
             :style="{ right: `${((i + 1) - onlineUsers.length) * 8}px`, zIndex: (i + 1) * -1 }">
-          <!-- <img :src="onlineUsers[0].profile_picture" alt=""
-            class="w-[48px] h-[48px] inline-block rounded-full relative last:!right-0 shadow-md border border-black"
-            :style="{ right: `-16px`, zIndex: -1 }">
-          <img :src="onlineUsers[0].profile_picture" alt=""
-            class="w-[48px] h-[48px] inline-block rounded-full relative last:!right-0 shadow-md border border-black"
-            :style="{ right: `-8px`, zIndex: -2 }">
-          <img :src="onlineUsers[0].profile_picture" alt=""
-            class="w-[48px] h-[48px] inline-block rounded-full relative last:!right-0 shadow-md border border-black"
-            :style="{ right: `0px`, zIndex: -3 }"> -->
         </a>
-        <!-- <div class="w-[48px] h-[48px] rounded-full flex justify-center items-center text-white bg-blue-500 z-[2]">MA
-        </div>
-        <div
-          class="w-[48px] h-[48px] rounded-full flex justify-center items-center text-white bg-green-500 relative -left-2">
-          WP</div> -->
       </div>
     </div>
   </div>
   <div class="mt-8 flex gap-8 flex-col md:flex-row">
     <div class="md:w-[60%]">
       <h2 class="text-2xl font-semibold mb-4">Activities</h2>
-      <div class="flex gap-4">
+      <div class="flex justify-between">
         <PlusButton v-if="!showAddPlan" @click="showAddPlan = true">Add Activity</PlusButton>
-        <!-- <button class="inline-flex gap-2 px-3 py-2 rounded-lg border border-blue-primary text-blue-primary"
-          @click="showMap = !showMap">
-          <svg v-if="showMap" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-          </svg>
-          <svg v-if="!showMap" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-          </svg>
-          {{ showMap ? 'Hide' : 'Show' }} Map
-        </button> -->
+        <button
+          class="inline-flex px-3 py-2 rounded-lg gap-2.5 items-center bg-blue-primary text-white hover:bg-sky-600 active:bg-blue-700"
+          @click="showExtend = true">
+          Extend Plan
+        </button>
       </div>
       <!-- Form Add Activity -->
       <form class="px-6 py-5 border rounded-xl mt-4" v-if="showAddPlan" @submit.prevent="submitActivity">
@@ -226,8 +210,8 @@ async function submitActivity() {
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
-              <DatePicker v-model="newActivity.time" showTime hourFormat="24" :min-date="(new Date())"
-                placeholder="mm/dd/yyyy --:--"></DatePicker>
+              <DatePicker v-model="newActivity.time" showTime hourFormat="24" :min-date="new Date(plan.start_date)"
+                :max-date="new Date(plan.end_date)" placeholder="mm/dd/yyyy --:--"></DatePicker>
             </div>
           </div>
         </div>
@@ -237,24 +221,12 @@ async function submitActivity() {
             @click="showAddPlan = false">Cancel</button>
         </div>
       </form>
-      <ActivityCard v-for="activity in activities" :key="activity.id" :activity="activity"
-        @delete="deleteActivity(activity.id)" />
+      <div v-if="activities.length">
+        <ActivityCard v-for="activity in activities" :key="activity.id" :activity="activity"
+          @delete="deleteActivity(activity.id)" />
+      </div>
       <hr class="mt-4">
       <ActivityCard v-for="activity in completedActivities" :key="activity.id" :activity="activity" />
-      <!-- <div class="px-6 py-5 border rounded-xl flex justify-between items-center mt-4" v-for="i in 2">
-        <div>
-          <h3 class="text-xl font-semibold mb-2">Pantai Mertasari</h3>
-          <div class="flex gap-2.5 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            <span>Yesterday, 19:00</span>
-          </div>
-        </div>
-        <Rating v-model="rating" />
-      </div> -->
 
     </div>
     <div class="md:w-[40%]">
@@ -265,7 +237,9 @@ async function submitActivity() {
   </div>
 
   <ShareDialog v-model:visible="showShare" :plan="plan" :online-users="onlineUsers" />
-
+  <ExtendPlanDialog v-model:visible="showExtend" :plan="plan" />
+  <EditPlanModal v-model:visible="showEditPlan" :plan="plan"
+    @submitted="router.visit(`/dashboard/plan/${plan.public_id}`)" />
   <SelectLocation v-model="selectLocation" @selected="handleSelectedLocation" />
 </template>
 <style>

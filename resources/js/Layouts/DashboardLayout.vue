@@ -113,7 +113,7 @@ const confirmLogout = () => {
           </svg>
         </template>
       </SidebarItem>
-      <SidebarItem to="/dashboard/plans" text="Plans" :isActive="route().current() == 'plan.showAll' ? true : false">
+      <SidebarItem to="/dashboard/plans" text="Plans" :isActive="route().current() == 'plan.index' ? true : false">
         <template #icon>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">

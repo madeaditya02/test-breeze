@@ -3,12 +3,13 @@ import PencilSquareIconButton from "@/Components/PencilSquareIconButton.vue";
 import ShareIconButton from "@/Components/ShareIconButton.vue";
 import StatusBadge from "./StatusBadge.vue";
 import Popover from "primevue/popover";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import DeletePlanButton from "./DeletePlanButton.vue";
 import PrimaryButton from "./PrimaryButton.vue";
 import moment from "moment";
 import Rating from "primevue/rating";
 import { placePhoto } from "@/util";
+
 defineEmits(['delete'])
 const props = defineProps(['activity'])
 const planAction = ref()
@@ -28,16 +29,15 @@ const fromNow = computed(() => {
 const isActive = computed(() => {
   return moment.utc(props.activity.time).isSameOrAfter(moment())
 })
-
 const rating = ref()
 </script>
 <template>
   <div class="px-6 py-5 border rounded-xl flex md:items-center gap-3 sm:gap-4 lg:gap-7 mt-4 flex-col md:flex-row">
-    <img v-if="isActive" :src="placePhoto(activity.place.photo)" alt=""
+    <img v-if="isActive" :src="placePhoto(activity.photo)" alt=""
       class="md:w-[160px] w-full h-[120px] object-cover rounded-xl">
     <div class="flex-grow">
       <div class="flex justify-between">
-        <h3 class="text-xl font-semibold">{{ activity.place.name }}</h3>
+        <h3 class="text-xl font-semibold">{{ activity.name }}</h3>
         <button v-if="isActive" @click="showPlanAction" class="lg:hidden">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-7">

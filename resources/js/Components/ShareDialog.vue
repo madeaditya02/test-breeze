@@ -15,7 +15,6 @@ const visible = defineModel('visible')
 const users = ref([])
 onMounted(async () => {
   users.value = (await axios.post('/search-users', {})).data;
-  console.log(props.plan.users);
 })
 const filteredUsers = ref([])
 const selectedUser = ref(null)

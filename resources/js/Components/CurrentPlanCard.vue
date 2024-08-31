@@ -13,16 +13,21 @@ const planAction = ref()
 function showPlanAction(event) {
   planAction.value.toggle(event)
 }
-const currentActivities = computed(() => plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2))
+const currentActivities = computed(() => {
+  if (plan.activities.length) {
+    return plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2);
+  }
+  return []
+});
 </script>
 <template>
   <div class="w-full border rounded-xl px-6 py-5 flex flex-col md:flex-row gap-8">
-    <Link :href="`/dashboard/plans/${plan.public_id}`">
+    <Link :href="`/dashboard/plan/${plan.public_id}`" v-if="currentActivities.length">
     <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] min-h-[120px] h-full rounded-xl">
     </Link>
     <div class="flex-grow grid grid-cols-1 md:grid-cols-[auto_min-content] h-fit">
       <div class="flex items-start gap-4">
-        <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-semibold hover:underline">{{ plan.name
+        <Link :href="`/dashboard/plan/${plan.public_id}`" class="text-2xl font-semibold hover:underline">{{ plan.name
         }}</Link>
         <button @click="showPlanAction" class="sm:hidden">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
