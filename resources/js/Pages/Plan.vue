@@ -301,7 +301,7 @@ function deletePlanConfirm() {
     <div class="md:w-[40%]">
       <h2 class="text-2xl font-semibold mb-4">Maps</h2>
       <MapComponent class="my-4" v-if="showMap" :places="plan.activities.map(act => act.place)" />
-      <Trivia />
+      <!-- <Trivia /> -->
     </div>
   </div>
 
