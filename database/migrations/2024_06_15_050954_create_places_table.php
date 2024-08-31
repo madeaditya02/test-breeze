@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->json('types');
             $table->string('address');
+            $table->string('province');
             $table->double('latitude');
             $table->double('longitude');
             $table->double('rating');

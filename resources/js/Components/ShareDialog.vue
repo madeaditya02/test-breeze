@@ -13,25 +13,18 @@ const props = defineProps(['plan', 'onlineUsers'])
 const { props: { auth } } = usePage()
 const visible = defineModel('visible')
 const users = ref([])
-onMounted(async () => {
-  users.value = (await axios.post('/search-users', {})).data
-  // console.log(users.value);
-})
 const filteredUsers = ref([])
 const selectedUser = ref(null)
 async function search(event) {
   // filteredUsers.value = users.value.filter(user => user.name.toLowerCase().includes(event.query.toLowerCase()))
   filteredUsers.value = (await axios.get(`/search-users?q=${event.query.toLowerCase()}`)).data
-  console.log(filteredUsers.value);
 }
 const toast = useToast();
 async function inviteUser() {
-  // console.log(selectedUser.value);
-  const res = await axios.post(`/dashboard/plans/${props.plan.id}/invite`, { user: selectedUser.value.id });
+  const res = await axios.post(`/dashboard/plans/${props.plan.public_id}/invite`, { user: selectedUser.value.id });
   if (res.status == 200)
     toast.add({ severity: 'success', summary: 'Invite Friend', detail: 'Invitation successfully sended', life: 4000 });
   selectedUser.value = null
-  // console.log(res);
 }
 const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
 const isOwner = computed(() => {

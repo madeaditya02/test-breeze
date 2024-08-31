@@ -17,9 +17,10 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
 </script>
 <template>
   <div class="w-full border rounded-xl px-6 py-5 flex flex-col md:flex-row gap-8">
-    <Link :href="`/dashboard/plans/${plan.public_id}`">
-    <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] min-h-[120px] h-full rounded-xl">
-    </Link>
+    <!-- <Link :href="`/dashboard/plans/${plan.public_id}`">
+    <img :src="placePhoto((currentActivities.length ? currentActivities[0] : plan.activities[0]).place.photo)" alt=""
+      class="w-[250px] min-h-[120px] h-full rounded-xl">
+    </Link> -->
     <div class="flex-grow grid grid-cols-1 md:grid-cols-[auto_min-content] h-fit">
       <div class="flex items-start gap-4">
         <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-semibold hover:underline">{{ plan.name
@@ -44,7 +45,7 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
         <share-icon-button @share="$emit('sharePlan')" />
       </div>
       <div>
-        <div class="flex gap-3 mt-4 items-center">
+        <div class="flex gap-3 mt-2 items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -52,6 +53,7 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
           </svg>
           <span>{{ rangePlan(plan, 'MMM D, Y') }}</span>
         </div>
+        <div v-if="!currentActivities?.length" class="mt-3 text-gray-600">No current activities here</div>
         <div
           class="grid grid-cols-[min-content_auto] md:grid-cols-[min-content_auto_16px_auto] gap-x-3 gap-y-1 md:gap-y-2 mt-4 items-center">
           <template v-for="activity in currentActivities">

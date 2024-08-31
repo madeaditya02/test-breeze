@@ -35,9 +35,11 @@ const show = ref(false)
 </script>
 <template>
   <nav
-    class="navbar flex justify-between md:items-center md:px-[120px] py-6 flex-wrap flex-col md:flex-row fixed top-0 left-0 right-0 bg-white transition-all z-10">
+    class="navbar flex justify-between md:items-center md:px-[120px] py-6 flex-wrap flex-col md:flex-row fixed top-0 left-0 right-0 bg-white transition-all z-20">
     <div class="w-full md:w-auto flex justify-between items-center px-8 md:px-0">
-      <Link href="/" class="text-3xl font-semibold">Travel Planner</Link>
+      <Link href="/" class="text-3xl font-semibold">
+      <img src="img/Logo.png" alt="" class="w-32 sm:w-40 -mt-2">
+      </Link>
       <IconButton class="md:hidden" @click="show = !show">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-6">
@@ -49,8 +51,7 @@ const show = ref(false)
       :class="show ? 'flex' : 'hidden'">
       <Link href="/">Home</Link>
       <Link href="/stories">Stories</Link>
-      <Link href="#">Explore</Link>
-      <Link href="#">FaQ</Link>
+      <Link href="/explore">Explore</Link>
     </div>
     <div class="px-8 md:px-0 md:!block" :class="show ? 'block' : 'hidden'">
       <OutlineButton as-link="/dashboard" v-if="user">Dashboard</OutlineButton>

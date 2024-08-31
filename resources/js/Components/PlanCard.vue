@@ -22,7 +22,7 @@ console.log(currentActivities.value);
     <div>
       <div class="flex items-center gap-4">
         <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
-        <StatusBadge :status="planStatus(plan.activities)" />
+        <StatusBadge :status="planStatus(plan)" />
       </div>
       <div class="flex md:items-center gap-4 mt-4 flex-col md:flex-row">
         <div class="flex gap-3 items-center">

@@ -2,15 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Inertia\Inertia;
 
 class PlaceController extends Controller
 {
+    public function guest(Request $request)
+    {
+        return Inertia::render('Explore', ['provinces' => []]);
+    }
     public function explore(Request $request)
     {
-        return Inertia::render('Explore');
+        $data = Activity::whereHas('plan', function($query) {
+            return $query->whereHas('users', function($query) {
+                return $query->where('users.id', auth()->id());
+            });
+        })->with('place')->get()->pluck('place')->flatten()->pluck('province')->unique()->take(3);
+        // dd($data);
+        return Inertia::render('DashboardExplore', ['provinces' => $data]);
     }
     public function search(Request $request, string $search)
     {

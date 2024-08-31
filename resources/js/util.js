@@ -1,12 +1,10 @@
 import axios from "axios";
 import moment from "moment";
 
-export const planStatus = (activities) =>
-    moment.utc(activities[0].time).isAfter(moment().endOf("day"))
+export const planStatus = (plan) =>
+    moment(plan.start_date).startOf("day").isAfter(moment().endOf("day"))
         ? "Upcoming"
-        : moment
-              .utc(activities[activities.length - 1].time)
-              .isSameOrAfter(moment())
+        : moment(plan.end_date).endOf("day").isSameOrAfter(moment())
         ? "On Going"
         : "Completed";
 
