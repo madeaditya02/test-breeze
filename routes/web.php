@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/plans/{plan:id}/activities', ActivityController::class);
         Route::get('/activities/{plan:public_id}', [PlanController::class, 'getActivities'])->name('get-activities');
 
-        Route::get('/plans', [PlanController::class, 'index'])->name('showAll');
+        Route::get('/plans', [PlanController::class, 'index'])->name('plan.index');
         Route::get('/plan/{plan:public_id}', [PlanController::class, 'show'])->name('plan.detail');
         Route::resource('plan', PlanController::class)->only(['store', 'update', 'destroy']);
         Route::name('plan.')->group(function () {

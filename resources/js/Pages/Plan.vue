@@ -20,14 +20,18 @@ import { useForm, usePage, router } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
 import Popover from 'primevue/popover';
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 
 defineOptions({ layout: DashboardLayout });
 
 const { props: { auth } } = usePage()
 const props = defineProps(['plan']);
 const plan = ref(props.plan);
-
 const planActivity = ref([]);
+const confirm = useConfirm();
+const toast = useToast();
 
 const getActivity = () => {
   console.log(plan.value.public_id);
@@ -99,6 +103,7 @@ function handleSelectedLocation(place) {
   }
 }
 
+
 // Add Activity
 watch(showAddPlan, () => {
   newActivity.reset()
@@ -122,6 +127,38 @@ async function deleteActivity(id) {
   const res = await axios.delete(`/dashboard/plans/${plan.value.id}/activities/${id}`, {
     data: {
       activities: plan.value.activities,
+    }
+  })
+}
+
+async function deletePlan() {
+  await axios.delete(`/dashboard/plan/${plan.value.id}`)
+    .then(function () {
+      router.visit('/dashboard/plans');
+    })
+    .catch(function (err) {
+      console.log(err);
+    })
+}
+
+function deletePlanConfirm() {
+  confirm.require({
+    message: 'Do you want to delete this plan?',
+    header: 'Danger Zone',
+    icon: 'pi pi-info-circle',
+    rejectLabel: 'Cancel',
+    rejectProps: {
+      label: 'Cancel',
+      severity: 'secondary',
+      outlined: true
+    },
+    acceptProps: {
+      label: 'Delete',
+      severity: 'danger'
+    },
+    accept: function () {
+      toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Plan deleted', life: 3000 });
+      deletePlan();
     }
   })
 }
@@ -160,13 +197,13 @@ async function deleteActivity(id) {
         <div class="flex">
           <share-icon-button v-if="isOwner" @share="showShare = true" />
           <PencilSquareIconButton @click="showEditPlan = true" />
-          <DeletePlanButton v-if="isOwner" />
+          <DeletePlanButton v-if="isOwner" @click="deletePlanConfirm()" />
         </div>
       </Popover>
       <div :class="isOwner ? 'hidden lg:flex gap-3' : ''">
         <share-icon-button v-if="isOwner" @share="showShare = true" />
         <PencilSquareIconButton @click="showEditPlan = true" />
-        <DeletePlanButton v-if="isOwner" />
+        <DeletePlanButton v-if="isOwner" @click="deletePlanConfirm()" />
       </div>
       <div class="hidden md:flex">
         <a href="#" @click="showShare = true">

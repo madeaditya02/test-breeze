@@ -120,7 +120,23 @@ class PlanController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            Plan::find($id)->delete();
+
+            return response()->json(
+                [
+                    'message' => 'Success'
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'message' => 'Something went wrong. ' . $err->getMessage(),
+                ],
+                400
+            );
+        }
     }
 
     public function join(Plan $plan)
