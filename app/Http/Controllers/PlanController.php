@@ -51,7 +51,7 @@ class PlanController extends Controller
                 ]
             );
             $createdPlan->users()->attach($request->userId, ['accepted_at' => date("Y-m-d H:i:s")]);
-
+            return response()->json($createdPlan);
             return to_route('plan.index');
         } catch (Throwable $e) {
             return response()->json(

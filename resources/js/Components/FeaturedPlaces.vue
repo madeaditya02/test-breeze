@@ -5,11 +5,24 @@ import Loading from "@/Components/Loading.vue";
 import NewPlanModal from "@/Components/NewPlanModal.vue";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
-const { provinces, count, countMany } = defineProps(['provinces', 'count', 'countMany'])
+const { provinces, count, countMany, plans } = defineProps(['provinces', 'count', 'countMany', 'plans'])
 const showModal = ref(false);
 const showNewPlanModal = ref(false);
+const selectedPlace = ref(null)
+
+function selectPlaceExisting(place) {
+  showModal.value = true
+  selectedPlace.value = place
+}
+function selectPlaceNew(place) {
+  showNewPlanModal.value = true
+  selectedPlace.value = place
+}
+
+watch(showModal, val => !val ? selectedPlace.value = null : null)
+watch(showNewPlanModal, val => !val ? selectedPlace.value = null : null)
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
@@ -58,12 +71,12 @@ onMounted(async () => {
 </script>
 <template>
   <div v-if="featuredPlaces.length > 0" class="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-    <DestinationCard v-for="place in featuredPlaces" :place="place" @show-modal="showModal = true"
-      @show-new-plan-modal="showNewPlanModal = true" />
+    <DestinationCard v-for="place in featuredPlaces" :place="place" @show-modal="selectPlaceExisting(place)"
+      @show-new-plan-modal="selectPlaceNew(place)" />
   </div>
   <Loading v-if="loading" />
   <span class="loadMoreIntersect"></span>
 
-  <ExistingPlanModal v-model:show="showModal" />
-  <NewPlanModal v-model:show="showNewPlanModal" />
+  <ExistingPlanModal v-model:show="showModal" :plans="plans" :selected-place="selectedPlace" />
+  <NewPlanModal v-model:show="showNewPlanModal" :selected-place="selectedPlace" />
 </template>

@@ -47,17 +47,20 @@ class ActivityController extends Controller
             'id' => $data['place']['id'],
             'name' => $data['place']['displayName']['text'],
             'types' => json_encode($data['place']['types']),
-            'address' => $data['place']['formattedAddress'],
+            'address' => $data['place']['formattedAddress']  ?? null,
             'latitude' => $data['place']['location']['latitude'],
             'longitude' => $data['place']['location']['longitude'],
-            'rating' => $data['place']['rating'],
+            'rating' => $data['place']['rating'] ?? null,
             'url' => $data['place']['googleMapsUri'],
-            'summary' => $data['place']['editorialSummary']['text'] ?? '',
-            'photo' => $data['place']['photos'][0]['name'],
+            'summary' => $data['place']['editorialSummary']['text'] ?? null,
+            'photo' => $data['place']['photos'][0]['name'] ?? null,
+            'province' => collect($data['place']['addressComponents'])->filter(function($value) {
+                return in_array('administrative_area_level_1', $value['types']);
+            })->first()['shortText'] ?? null
         ], ['id']);
 
         Activity::create($newActivity);
-        $updated = $plan->activities()->with('place')->get();
+        $updated = $plan->activities()->with('place')->oldest()->get();
         broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
 
         return back();

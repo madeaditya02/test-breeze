@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('places', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
-            $table->json('types');
-            $table->string('address');
-            $table->string('province');
+            $table->json('types')->nullable();
+            $table->string('address')->nullable();
+            $table->string('province')->nullable();
             $table->double('latitude');
             $table->double('longitude');
-            $table->double('rating');
-            $table->string('url');
-            $table->text('summary');
-            $table->string('photo');        
+            $table->double('rating')->nullable();
+            $table->string('url')->nullable();
+            $table->text('summary')->nullable();
+            $table->string('photo')->nullable();      
             $table->timestamps();
         });
     }

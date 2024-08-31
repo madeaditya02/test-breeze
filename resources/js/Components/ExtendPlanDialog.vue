@@ -8,10 +8,10 @@ import axios from "axios";
 import Toast from "primevue/toast";
 const props = defineProps(['plan'])
 const visible = defineModel('visible')
-const users = ref([])
-onMounted(async () => {
-  users.value = (await axios.post('/search-users', {})).data;
-})
+// const users = ref([])
+// onMounted(async () => {
+//   users.value = (await axios.post('/search-users', {})).data;
+// })
 
 const endDate = ref(props.plan.end_date);
 const endDateChanged = ref(false);
