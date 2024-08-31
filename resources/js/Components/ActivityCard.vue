@@ -77,6 +77,6 @@ const rating = ref()
         <span>View Location</span>
       </PrimaryButton>
     </div>
-    <Rating v-if="!isActive" v-model="rating" />
+    <!-- <Rating v-if="!isActive" v-model="rating" /> -->
   </div>
 </template>
