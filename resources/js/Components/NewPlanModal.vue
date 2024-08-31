@@ -1,7 +1,6 @@
 <script setup>
 import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import PlusButton from "@/Components/PlusButton.vue";
 import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
@@ -25,6 +24,7 @@ function createPlan(form, userId) {
   axios.post('/dashboard/plan', form)
     .then(function (response) {
       show.value = false;
+      router.visit('/dashboard/plans');
     })
     .catch(function (error) {
       console.log(error);
