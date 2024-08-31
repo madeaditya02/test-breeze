@@ -60,7 +60,7 @@ class ActivityController extends Controller
         ], ['id']);
 
         Activity::create($newActivity);
-        $updated = $plan->activities()->with('place')->oldest()->get();
+        $updated = $plan->activities()->with('place')->orderBy('time', 'ASC')->get();
         broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
 
         return back();
@@ -106,6 +106,10 @@ class ActivityController extends Controller
         $updatedActivity->place_id = $request['place']['id'];
 
         $updatedActivity->save();
+
+        $updated = $plan->activities()->with('place')->orderBy('time', 'ASC')->get();
+        broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
+
         return response()->json(
             [
                 'message' => 'Success'
@@ -124,7 +128,8 @@ class ActivityController extends Controller
         }
         $data = $request->all();
         $activity->delete();
-        broadcast(new UpdateActivity($data['activities'], $plan->id))->toOthers();
+        $updated = $plan->activities()->with('place')->orderBy('time', 'asc')->get();
+        broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
         return response()->json($data['activities']);
     }
 }

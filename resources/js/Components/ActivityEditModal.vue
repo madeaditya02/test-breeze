@@ -24,18 +24,22 @@ watch(show, s => {
 })
 
 function editActivity(form) {
-  axios.put(`/dashboard/plans/${props.activity.plan_id}/activities/${props.activity.id}`, form)
-    .then(() => {
-      show.value = false;
-      emit('submitted');
-    }).catch((err) => {
-      console.log(err);
-    });
+  axios.put(`/dashboard/plans/${props.activity.plan_id}/activities/${props.activity.id}`, form, {
+    headers: {
+      "X-Socket-ID": Echo.socketId()
+    }
+  }).then(() => {
+    show.value = false;
+    emit('submitted');
+  }).catch((err) => {
+    console.log(err);
+  });
 }
 
-function handleSelectedLocation(place) {
-  console.log(place);
-  formData.value.place = place;
+function handleSelectedLocation(pl) {
+  console.log(pl);
+  formData.value.place = pl;
+  place.value = pl
 }
 </script>
 <template>
@@ -55,11 +59,12 @@ function handleSelectedLocation(place) {
           <h3 class="text-lg">Current Location:</h3>
           <div
             class="px-6 py-5 border rounded-xl flex md:items-center gap-3 sm:gap-4 lg:gap-7 mt-4 flex-col md:flex-row">
-            <img :src="place == null ? placePhoto(activity.photo) : placePhoto(place.photo)" alt=""
+            <img :src="place == null ? placePhoto(activity.photo) : placePhoto(place.photos[0].name)" alt=""
               class="md:w-[160px] w-full h-[120px] object-cover rounded-xl">
             <div class="flex-grow">
-              <div class="flex justify-between">
-                <h3 class="text-xl font-semibold">{{ place == null ? activity.name : place.name }}</h3>
+              <div class="">
+                <h3 class="text-xl font-semibold">{{ place == null ? activity.name : place.displayName.text }}</h3>
+                <div class="mt-2 text-sm">{{ place == null ? activity.address : place.formattedAddress }}</div>
               </div>
             </div>
           </div>

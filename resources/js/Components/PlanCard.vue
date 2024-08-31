@@ -20,7 +20,7 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
   <div class="px-6 py-5 border rounded-xl flex justify-between flex-col md:flex-row">
     <div>
       <div class="flex items-center gap-4">
-        <Link :href="`/dashboard/plan/${plan.public_id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
+        <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-medium">{{ plan.name }}</Link>
         <StatusBadge :status="planStatus(plan)" />
       </div>
       <div class="flex md:items-center gap-4 mt-4 flex-col md:flex-row">

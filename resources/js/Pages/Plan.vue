@@ -15,13 +15,15 @@ import Trivia from '@/Components/Trivia.vue';
 import ExtendPlanDialog from '@/Components/ExtendPlanDialog.vue';
 import ActivityEditModal from '@/Components/ActivityEditModal.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import { rangePlan } from '@/util';
+import { planStatus, rangePlan } from '@/util';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
 import Popover from 'primevue/popover';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
+import Button from 'primevue/button';
+import OutlineButton from '@/Components/OutlineButton.vue';
 
 defineOptions({ layout: DashboardLayout });
 
@@ -65,7 +67,10 @@ onMounted(() => {
       onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
     })
     .listen('UpdateActivity', e => {
-      plan.value.activities = e.activities
+      // planActivity.value = e.activities
+      getActivity();
+      // console.log(e);
+      // console.log('updated');
     })
     .error((error) => {
       console.error(error);
@@ -102,7 +107,6 @@ function handleSelectedLocation(place) {
   }
 }
 
-
 // Add Activity
 watch(showAddPlan, () => {
   newActivity.reset()
@@ -111,23 +115,35 @@ const newActivity = useForm({
   time: '',
   place: null
 });
+const loadingAdd = ref(false)
 async function submitActivity() {
+  loadingAdd.value = true
   const res = await axios.post(`/dashboard/plans/${plan.value.id}/activities`, {
     data: newActivity.data(),
     activities: plan.value.activities
+  }, {
+    headers: {
+      "X-Socket-ID": Echo.socketId()
+    }
   })
+  getActivity()
   showAddPlan.value = false;
   newActivity.reset();
-  getActivity();
+  loadingAdd.value = false
 }
 
 async function deleteActivity(id) {
-  plan.value.activities = plan.value.activities.filter(act => act.id != id)
+  planActivity.value = planActivity.value.filter(act => act.id != id)
   const res = await axios.delete(`/dashboard/plans/${plan.value.id}/activities/${id}`, {
     data: {
       activities: plan.value.activities,
     }
+  }, {
+    headers: {
+      "X-Socket-ID": Echo.socketId()
+    }
   })
+  getActivity()
 }
 
 async function deletePlan() {
@@ -192,25 +208,34 @@ function deletePlanConfirm() {
             d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
         </svg>
       </button>
-      <Popover ref="planAction" v-if="isOwner">
+      <Popover ref="planAction" v-if="isOwner && planStatus(plan) != 'Completed'">
         <div class="flex">
           <share-icon-button v-if="isOwner" @share="showShare = true" />
           <PencilSquareIconButton @click="showEditPlan = true" />
           <DeletePlanButton v-if="isOwner" @click="deletePlanConfirm()" />
         </div>
       </Popover>
-      <div :class="isOwner ? 'hidden lg:flex gap-3' : ''">
+      <div v-if="planStatus(plan) != 'Completed'" :class="isOwner ? 'hidden lg:flex gap-3' : ''">
         <share-icon-button v-if="isOwner" @share="showShare = true" />
         <PencilSquareIconButton @click="showEditPlan = true" />
         <DeletePlanButton v-if="isOwner" @click="deletePlanConfirm()" />
       </div>
-      <div class="hidden md:flex">
+      <OutlineButton v-if="planStatus(plan) == 'Completed'" :as-link="`/dashboard/plans/${plan.public_id}/story`">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-4">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+        </svg>
+        Write Story
+      </OutlineButton>
+      <div v-if="planStatus(plan) != 'Completed'" class="hidden md:flex">
         <a href="#" @click="showShare = true">
           <img v-for="(user, i) in onlineUsers" :src="user.profile_picture" alt=""
             class="w-[48px] h-[48px] inline-block rounded-full relative last:!right-0 shadow-md"
             :style="{ right: `${((i + 1) - onlineUsers.length) * 8}px`, zIndex: (i + 1) * -1 }">
         </a>
       </div>
+      <!-- <div>hello</div> -->
     </div>
   </div>
   <div class="mt-8 flex gap-8 flex-col md:flex-row">
@@ -252,7 +277,14 @@ function deletePlanConfirm() {
           </div>
         </div>
         <div class="flex gap-2.5 mt-3 items-center">
-          <PrimaryButton class="!py-1 text-sm !rounded-md">Add Activity</PrimaryButton>
+          <Button type="submit" :disabled="loadingAdd" class="!py-1 text-sm !rounded-md">
+            <svg v-if="loadingAdd" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-5 inline animate-spin">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Add Activity
+          </Button>
           <button type="reset" class="px-3 py-1 rounded-md border border-red-600 text-red-600 text-sm"
             @click="showAddPlan = false">Cancel</button>
         </div>
@@ -276,8 +308,9 @@ function deletePlanConfirm() {
   <ShareDialog v-model:visible="showShare" :plan="plan" :online-users="onlineUsers" />
   <ExtendPlanDialog v-model:visible="showExtend" :plan="plan" />
   <EditPlanModal v-model:visible="showEditPlan" :plan="plan"
-    @submitted="router.visit(`/dashboard/plan/${plan.public_id}`); router.reload(`/dashboard/plan/${plan.public_id}`)" />
-  <ActivityEditModal v-model:show="showEditActivity" :activity="activeActivity" :plan="plan" />
+    @submitted="router.visit(`/dashboard/plans/${plan.public_id}`); router.reload(`/dashboard/plans/${plan.public_id}`)" />
+  <ActivityEditModal v-model:show="showEditActivity" :activity="activeActivity" :plan="plan"
+    @submitted="getActivity()" />
   <SelectLocation v-model="selectLocation" @selected="handleSelectedLocation" />
 </template>
 <style>

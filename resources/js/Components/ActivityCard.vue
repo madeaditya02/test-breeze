@@ -31,6 +31,8 @@ const fromNow = computed(() => {
 const isActive = computed(() => {
   return moment.utc(props.activity.time).isSameOrAfter(moment())
 })
+console.log(props.activity);
+
 const rating = ref()
 </script>
 <template>
