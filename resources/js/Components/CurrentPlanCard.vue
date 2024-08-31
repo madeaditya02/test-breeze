@@ -23,7 +23,7 @@ const currentActivities = computed(() => {
 <template>
   <div class="w-full border rounded-xl px-6 py-5 flex flex-col md:flex-row gap-8">
     <Link :href="`/dashboard/plans/${plan.public_id}`" v-if="currentActivities.length">
-    <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] min-h-[120px] h-full rounded-xl">
+    <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] h-[170px] rounded-xl object-cover">
     </Link>
     <div class="flex-grow grid grid-cols-1 md:grid-cols-[auto_min-content] h-fit">
       <div class="flex items-start gap-4">

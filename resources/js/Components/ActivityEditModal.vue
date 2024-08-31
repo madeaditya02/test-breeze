@@ -13,22 +13,34 @@ const emit = defineEmits(['submitted'])
 
 const showSelectPlace = ref(false);
 const place = ref(null);
+console.log(props.activity);
 
 const formData = ref({
   time: props.activity.time,
-  place: null
+  place: props.activity.place
 });
 
 watch(show, s => {
-  place.value = null;
+  // place.value = null;
+  if (s) {
+    formData.value.time = props.activity.time
+    formData.value.place = props.activity.place
+    console.log(formData.value.time);
+  }
 })
 
 function editActivity(form) {
+  // form.place = place.value
+  console.log(form.place);
+  console.log(place.value);
+
   axios.put(`/dashboard/plans/${props.activity.plan_id}/activities/${props.activity.id}`, form, {
     headers: {
       "X-Socket-ID": Echo.socketId()
     }
-  }).then(() => {
+  }).then((res) => {
+    console.log(res);
+
     show.value = false;
     emit('submitted');
   }).catch((err) => {
@@ -40,6 +52,7 @@ function handleSelectedLocation(pl) {
   console.log(pl);
   formData.value.place = pl;
   place.value = pl
+  console.log(place.value);
 }
 </script>
 <template>

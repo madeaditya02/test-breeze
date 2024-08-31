@@ -24,6 +24,8 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import Button from 'primevue/button';
 import OutlineButton from '@/Components/OutlineButton.vue';
+import axios from 'axios';
+import Toast from 'primevue/toast';
 
 defineOptions({ layout: DashboardLayout });
 
@@ -178,8 +180,15 @@ function deletePlanConfirm() {
   })
 }
 
+async function editSubmitted() {
+  showEditPlan.value = false
+  plan.value = (await axios.get(`/dashboard/plans/${plan.value.public_id}?reload=plan`)).data.plan
+  toast.add({ severity: 'success', summary: 'Edit Plan', detail: 'Plan has been dited', life: 4000 })
+}
+
 </script>
 <template>
+  <Toast />
   <div class="flex justify-between">
     <div>
       <h1 class="text-3xl font-semibold">{{ plan.name }}</h1>
@@ -307,10 +316,9 @@ function deletePlanConfirm() {
 
   <ShareDialog v-model:visible="showShare" :plan="plan" :online-users="onlineUsers" />
   <ExtendPlanDialog v-model:visible="showExtend" :plan="plan" />
-  <EditPlanModal v-model:visible="showEditPlan" :plan="plan"
-    @submitted="router.visit(`/dashboard/plans/${plan.public_id}`); router.reload(`/dashboard/plans/${plan.public_id}`)" />
+  <EditPlanModal v-model:visible="showEditPlan" :plan="plan" @submitted="editSubmitted" />
   <ActivityEditModal v-model:show="showEditActivity" :activity="activeActivity" :plan="plan"
-    @submitted="getActivity()" />
+    @submitted="getActivity();" />
   <SelectLocation v-model="selectLocation" @selected="handleSelectedLocation" />
 </template>
 <style>

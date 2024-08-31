@@ -65,7 +65,7 @@ class PlanController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Plan $plan)
+    public function show(Plan $plan, Request $request)
     {
         if (!Gate::allows('edit-plan', $plan)) {
             abort(403);
@@ -75,6 +75,9 @@ class PlanController extends Controller
         }, 'users' => function ($query) {
             $query->wherePivotNotNull('accepted_at');
         }, 'activities.place']);
+        if ($request->input('reload')) {
+            return response()->json(['plan' => $plan->refresh()], 200);
+        }
         return Inertia::render('Plan', ['plan' => $plan]);
     }
 

@@ -81,32 +81,34 @@ class ActivityController extends Controller
     {
         //
     }
-
+    
     /**
      * Update the specified resource in storage.
      */
     public function update(Plan $plan, Activity $activity, Request $request)
     {
+        $req = $request->all();
+        return response()->json($request->all());
         if ($request['place'] != null) {
             Place::upsert([
-                'id' => $request['place']['id'],
-                'name' => $request['place']['displayName']['text'],
-                'types' => json_encode($request['place']['types']),
-                'address' => $request['place']['formattedAddress'],
-                'latitude' => $request['place']['location']['latitude'],
-                'longitude' => $request['place']['location']['longitude'],
-                'rating' => $request['place']['rating'],
-                'url' => $request['place']['googleMapsUri'],
-                'summary' => $request['place']['editorialSummary']['text'] ?? '',
-                'photo' => $request['place']['photos'][0]['name'],
+                'id' => $req['place']['id'],
+                'name' => $req['place']['displayName']['text'],
+                'types' => json_encode($req['place']['types']),
+                'address' => $req['place']['formattedAddress'],
+                'latitude' => $req['place']['location']['latitude'],
+                'longitude' => $req['place']['location']['longitude'],
+                'rating' => $req['place']['rating'],
+                'url' => $req['place']['googleMapsUri'],
+                'summary' => $req['place']['editorialSummary']['text'] ?? '',
+                'photo' => $req['place']['photos'][0]['name'],
             ], ['id']);
         }
         $updatedActivity = Activity::find($activity->id);
-        $updatedActivity->time = $request->time;
-        $updatedActivity->place_id = $request['place']['id'];
-
+        $updatedActivity->time = $req['time'];
+        $updatedActivity->place_id = $req['place']['id'];
+        
         $updatedActivity->save();
-
+        
         $updated = $plan->activities()->with('place')->orderBy('time', 'ASC')->get();
         broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
 
