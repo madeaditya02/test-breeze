@@ -88,8 +88,9 @@ class ActivityController extends Controller
     public function update(Plan $plan, Activity $activity, Request $request)
     {
         $req = $request->all();
-        return response()->json($request->all());
-        if ($request['place'] != null) {
+        // return response()->json($request->all());
+        $updatedActivity = Activity::find($activity->id);
+        if ($req['place']) {
             Place::upsert([
                 'id' => $req['place']['id'],
                 'name' => $req['place']['displayName']['text'],
@@ -102,10 +103,9 @@ class ActivityController extends Controller
                 'summary' => $req['place']['editorialSummary']['text'] ?? '',
                 'photo' => $req['place']['photos'][0]['name'],
             ], ['id']);
+            $updatedActivity->place_id = $req['place']['id'];
         }
-        $updatedActivity = Activity::find($activity->id);
         $updatedActivity->time = $req['time'];
-        $updatedActivity->place_id = $req['place']['id'];
         
         $updatedActivity->save();
         

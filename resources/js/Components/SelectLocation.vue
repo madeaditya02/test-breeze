@@ -121,8 +121,8 @@ async function getAI() {
               </InputGroup>
             </form>
             <PlaceCard v-for="place in searchResults" :place="place" @click="() => selectedPlace = place"
-              class="hover:bg-gray-100 cursor-pointer" :key="place.id"
-              :class="selectedPlace.id == place.id ? 'bg-gray-300' : 'bg-white'" />
+              class="hover:bg-gray-100 cursor-pointer active:bg-gray-200" :key="place.id"
+              :class="selectedPlace.id == place.id ? 'bg-gray-200' : 'bg-white'" />
             <Loading v-if="loading" />
             <!-- <div class="py-4 border-b flex gap-4 hover:bg-gray-100 cursor-pointer" v-for="place in searchResults"
               @click="selectedPlace = place" :class="selectedPlace.id == place.id ? 'bg-gray-100' : 'bg-white'">
@@ -155,7 +155,8 @@ async function getAI() {
       </Tabs>
     </div>
     <template #footer>
-      <Button class="ml-[18px]" label="Select Location" @click="submit" />
+      <Button :disabled="!Object.keys(selectedPlace).length" class="ml-[18px]" label="Select Location"
+        @click="submit" />
     </template>
   </Dialog>
 </template>

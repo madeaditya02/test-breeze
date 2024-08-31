@@ -27,7 +27,11 @@ async function createPlan(form, userId) {
   if (loading.value) return
   loading.value = true
   form.userId = userId;
-  axios.post('/dashboard/plan', form)
+  axios.post('/dashboard/plan', {
+    ...form,
+    startDate: moment(form.startDate).format("YYYY-MM-DD"),
+    endDate: moment(form.endDate).format("YYYY-MM-DD")
+  })
     .then(async function (response) {
       // show.value = false;
       const plan = response.data

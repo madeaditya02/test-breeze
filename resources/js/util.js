@@ -9,8 +9,8 @@ export const planStatus = (plan) =>
         : "Completed";
 
 export const rangePlan = (plan, format = "LL") => {
-    const start = moment(plan.start_date).local().format(format);
-    const end = moment(plan.end_date).local().format(format);
+    const start = moment.utc(plan.start_date).local().format(format);
+    const end = moment.utc(plan.end_date).local().format(format);
     return start == end ? start : `${start} - ${end}`;
 };
 

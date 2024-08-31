@@ -252,11 +252,11 @@ async function editSubmitted() {
       <h2 class="text-2xl font-semibold mb-4">Activities</h2>
       <div class="flex justify-between">
         <PlusButton v-if="!showAddPlan" @click="showAddPlan = true">Add Activity</PlusButton>
-        <button
+        <!-- <button
           class="inline-flex px-3 py-2 rounded-lg gap-2.5 items-center bg-blue-primary text-white hover:bg-sky-600 active:bg-blue-700"
           @click="showExtend = true">
           Extend Plan
-        </button>
+        </button> -->
       </div>
       <!-- Form Add Activity -->
       <form class="px-6 py-5 border rounded-xl mt-4" v-if="showAddPlan" @submit.prevent="submitActivity">

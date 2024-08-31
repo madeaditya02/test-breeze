@@ -6,6 +6,7 @@ import { ref, watch, defineEmits } from "vue";
 import axios from "axios";
 import { placePhoto } from "@/util";
 import SelectLocation from "@/Components/SelectLocation.vue";
+import moment from "moment";
 
 const props = defineProps(['show', 'activity', 'plan']);
 const show = defineModel('show')
@@ -16,25 +17,31 @@ const place = ref(null);
 console.log(props.activity);
 
 const formData = ref({
-  time: props.activity.time,
-  place: props.activity.place
+  time: moment.utc(props.activity.time).local().format("YYYY-MM-DD HH:mm:ss"),
+  place: null
 });
 
 watch(show, s => {
   // place.value = null;
   if (s) {
-    formData.value.time = props.activity.time
-    formData.value.place = props.activity.place
+    formData.value.time = moment.utc(props.activity.time).local().format("YYYY-MM-DD HH:mm:ss")
+    // formData.value.place = props.activity
+    console.log(props);
+
     console.log(formData.value.time);
   }
 })
 
 function editActivity(form) {
   // form.place = place.value
-  console.log(form.place);
-  console.log(place.value);
+  // console.log(form.place);
+  // console.log(place.value);
+  // form.time = moment(form.time).utc().format("YYYY-MM-DD HH:mm:ss");
+  console.log(formData.value);
 
-  axios.put(`/dashboard/plans/${props.activity.plan_id}/activities/${props.activity.id}`, form, {
+  axios.put(`/dashboard/plans/${props.activity.plan_id}/activities/${props.activity.id}`, {
+    ...form, time: moment(form.time).utc().format("YYYY-MM-DD HH:mm:ss")
+  }, {
     headers: {
       "X-Socket-ID": Echo.socketId()
     }

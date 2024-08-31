@@ -25,7 +25,7 @@ class PlanController extends Controller
     public function index()
     {
         // dd(auth()->user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users'])->get());
-        return Inertia::render('Plans', ['plans' => Auth::user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users', 'activities.place'])->get()]);
+        return Inertia::render('Plans', ['plans' => Auth::user()->plans()->wherePivotNotNull('accepted_at')->with(['activities', 'users', 'activities.place'])->orderBy('start_date', 'desc')->get()]);
     }
 
     /**
@@ -124,7 +124,7 @@ class PlanController extends Controller
     {
         try {
             Plan::find($id)->delete();
-
+            return redirect('/dashboard/plans')->with('alert', ['success', 'Delete Plan', 'Plan has been deleted']);
             return response()->json(
                 [
                     'message' => 'Success'

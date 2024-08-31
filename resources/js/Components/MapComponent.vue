@@ -101,7 +101,7 @@ onMounted(() => {
   initMap();
 });
 
-watch(places, () => {
+watch(() => places, () => {
   initMap()
 })
 

@@ -54,12 +54,12 @@ async function loadMorePlaces() {
 
 onMounted(async () => {
   loading.value = true
-  const ourPrompt = `${provinces?.length > 1 ? (count ?? 20) : (countMany ?? 40)}+ places hidden gem in ${provinces?.length ? provinces.join(', ') : 'Indonesia'}. Return as one array (fullname and short_description)`;
+  const ourPrompt = `${provinces?.length > 1 ? (count ?? 20) : (countMany ?? 40)}+ places hidden gem in ${provinces?.length ? provinces.join(', ') : 'Indonesia'}. Return array of object {fullname, short_description}`;
   const result = await model.generateContent(ourPrompt);
   const response = await result.response;
   const text = JSON.parse(response.text());
   featuredPlacesName.value = text
-  console.log(text);
+  console.log(response.text());
   await loadMorePlaces()
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting && !loading.value) loadMorePlaces()

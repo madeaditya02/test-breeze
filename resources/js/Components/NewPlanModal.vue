@@ -6,6 +6,7 @@ import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
 import Button from "primevue/button";
+import moment from "moment";
 
 defineProps(['show', 'user']);
 const show = defineModel('show')
@@ -24,11 +25,15 @@ const loading = ref(false)
 function createPlan(form, userId) {
   form.userId = userId;
   loading.value = true
-  axios.post('/dashboard/plan', form)
-    .then(function (response) {
-      // show.value = false;
-      router.visit(`/dashboard/plans/${response.data.public_id}`)
-    })
+  console.log(form);
+  axios.post('/dashboard/plan', {
+    ...form,
+    startDate: moment(form.startDate).format("YYYY-MM-DD"),
+    endDate: moment(form.endDate).format("YYYY-MM-DD")
+  }).then(function (response) {
+    // show.value = false;
+    router.visit(`/dashboard/plans/${response.data.public_id}`)
+  })
     .catch(function (error) {
       console.log(error);
     });

@@ -21,7 +21,7 @@ const currentActivities = computed(() => {
 });
 </script>
 <template>
-  <div class="w-full border rounded-xl px-6 py-5 flex flex-col md:flex-row gap-8">
+  <div class="w-full border rounded-xl px-6 py-5 flex flex-col md:flex-row gap-8 h-full">
     <Link :href="`/dashboard/plans/${plan.public_id}`" v-if="currentActivities.length">
     <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] h-[170px] rounded-xl object-cover">
     </Link>
@@ -38,14 +38,14 @@ const currentActivities = computed(() => {
         </button>
         <Popover ref="planAction">
           <div class="flex">
-            <pencil-square-icon-button />
+            <pencil-square-icon-button :as-link="`/dashboard/plans/${plan.public_id}`" />
             <share-icon-button @share="$emit('sharePlan')" />
           </div>
         </Popover>
         <!-- <StatusBadge status="On Going" /> -->
       </div>
       <div class="hidden md:flex gap-3">
-        <pencil-square-icon-button />
+        <pencil-square-icon-button :as-link="`/dashboard/plans/${plan.public_id}`" />
         <share-icon-button @share="$emit('sharePlan')" />
       </div>
       <div>

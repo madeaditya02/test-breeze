@@ -12,6 +12,7 @@ const page = usePage();
 const loggedUser = ref(page.props.auth.user);
 const showNavbar = ref(false)
 // console.log(page.props);
+const confirm = useConfirm();
 const toast = useToast();
 onUnmounted(
   router.on('success', (event) => {
@@ -30,7 +31,6 @@ const userMenu = ref();
 function toggleUserMenu(event) {
   userMenu.value.toggle(event);
 }
-const confirm = useConfirm();
 
 const confirmLogout = () => {
   confirm.require({

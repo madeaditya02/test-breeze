@@ -10,7 +10,7 @@ import moment from 'moment';
 import { Link } from '@inertiajs/vue3';
 import { humanizeFromNow, planStatus, rangePlan } from '@/util';
 
-defineEmits(['sharePlan']);
+defineEmits(['sharePlan', 'delete']);
 const { plan } = defineProps(['plan'])
 const rangeTime = computed(() => rangePlan(plan))
 const currentActivities = computed(() => plan.activities.filter(act => moment.utc(act.time).isSameOrAfter(moment())).slice(0, 2))
@@ -60,10 +60,9 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
     </div>
     <div class="text-right">
       <div class="flex gap-3 pt-2 border-t mt-3 md:pt-0 md:border-0 md:mt-0">
-        <pencil-square-icon-button />
-        <share-icon-button @share="$emit('sharePlan')" />
-        <FavoriteButton />
-        <DeletePlanButton />
+        <pencil-square-icon-button :as-link="`/dashboard/plans/${plan.public_id}`" />
+        <share-icon-button v-if="planStatus(plan) != 'Completed'" @share="$emit('sharePlan')" />
+        <DeletePlanButton @delete="$emit('delete')" />
       </div>
       <!-- <PrimaryButton class="mt-2.5">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

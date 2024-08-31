@@ -20,7 +20,7 @@ class PlaceController extends Controller
                 return $query->where('users.id', auth()->id());
             });
         })->with('place')->get()->pluck('place')->flatten()->pluck('province')->unique()->take(3);
-        $currentPlans = auth()->user()->plans()->wherePivotNotNull('accepted_at')->where('start_date', '<=', today())->where('end_date', '>=', today())->with(['activities', 'activities.place', 'users'])->get();
+        $currentPlans = auth()->user()->plans()->wherePivotNotNull('accepted_at')->where('end_date', '>=', today())->with(['activities', 'activities.place', 'users'])->get();
         // dd($data);
         return Inertia::render('DashboardExplore', ['provinces' => $data, 'plans' => $currentPlans]);
     }
