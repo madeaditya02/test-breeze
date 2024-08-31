@@ -2,7 +2,6 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import ActivityCard from '@/Components/ActivityCard.vue';
 import DeletePlanButton from '@/Components/DeletePlanButton.vue';
-import FavoriteButton from '@/Components/FavoriteButton.vue';
 import PencilSquareIconButton from '@/Components/PencilSquareIconButton.vue';
 import MapComponent from '@/Components/MapComponent.vue';
 import PlaceCard from '@/Components/PlaceCard.vue';
@@ -14,13 +13,13 @@ import EditPlanModal from '@/Components/EditPlanModal.vue';
 import ShareIconButton from '@/Components/ShareIconButton.vue';
 import Trivia from '@/Components/Trivia.vue';
 import ExtendPlanDialog from '@/Components/ExtendPlanDialog.vue';
+import ActivityEditModal from '@/Components/ActivityEditModal.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import { rangePlan } from '@/util';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import moment from 'moment';
 import DatePicker from 'primevue/datepicker';
 import Popover from 'primevue/popover';
-import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 
@@ -30,11 +29,11 @@ const { props: { auth } } = usePage()
 const props = defineProps(['plan']);
 const plan = ref(props.plan);
 const planActivity = ref([]);
+const activeActivity = ref({});
 const confirm = useConfirm();
 const toast = useToast();
 
 const getActivity = () => {
-  console.log(plan.value.public_id);
   return axios.get(`/dashboard/activities/${plan.value.public_id}`)
     .then((res) => {
       planActivity.value = res.data;
@@ -81,6 +80,7 @@ const showAddPlan = ref(false);
 const showShare = ref(false);
 const showExtend = ref(false);
 const showEditPlan = ref(false);
+const showEditActivity = ref(false);
 const showMap = ref(true);
 
 const planAction = ref()
@@ -96,7 +96,6 @@ const isOwner = computed(() => {
 // Location
 const selectLocation = ref(false)
 function handleSelectedLocation(place) {
-  console.log(place);
   // Untuk Add Activity
   if (showAddPlan) {
     newActivity.place = place
@@ -260,7 +259,8 @@ function deletePlanConfirm() {
       </form>
       <div v-if="activities.length">
         <ActivityCard v-for="activity in activities" :key="activity.id" :activity="activity"
-          @delete="deleteActivity(activity.id)" />
+          @delete="deleteActivity(activity.id)"
+          @select-edit="(activity) => { activeActivity = activity; showEditActivity = true; }" />
       </div>
       <hr class="mt-4">
       <ActivityCard v-for="activity in completedActivities" :key="activity.id" :activity="activity" />
@@ -276,7 +276,8 @@ function deletePlanConfirm() {
   <ShareDialog v-model:visible="showShare" :plan="plan" :online-users="onlineUsers" />
   <ExtendPlanDialog v-model:visible="showExtend" :plan="plan" />
   <EditPlanModal v-model:visible="showEditPlan" :plan="plan"
-    @submitted="router.visit(`/dashboard/plan/${plan.public_id}`)" />
+    @submitted="router.visit(`/dashboard/plan/${plan.public_id}`); router.reload(`/dashboard/plan/${plan.public_id}`)" />
+  <ActivityEditModal v-model:show="showEditActivity" :activity="activeActivity" :plan="plan" />
   <SelectLocation v-model="selectLocation" @selected="handleSelectedLocation" />
 </template>
 <style>

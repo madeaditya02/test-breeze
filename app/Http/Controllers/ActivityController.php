@@ -82,9 +82,33 @@ class ActivityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Activity $activity)
+    public function update(Plan $plan, Activity $activity, Request $request)
     {
-        //
+        if ($request['place'] != null) {
+            Place::upsert([
+                'id' => $request['place']['id'],
+                'name' => $request['place']['displayName']['text'],
+                'types' => json_encode($request['place']['types']),
+                'address' => $request['place']['formattedAddress'],
+                'latitude' => $request['place']['location']['latitude'],
+                'longitude' => $request['place']['location']['longitude'],
+                'rating' => $request['place']['rating'],
+                'url' => $request['place']['googleMapsUri'],
+                'summary' => $request['place']['editorialSummary']['text'] ?? '',
+                'photo' => $request['place']['photos'][0]['name'],
+            ], ['id']);
+        }
+        $updatedActivity = Activity::find($activity->id);
+        $updatedActivity->time = $request->time;
+        $updatedActivity->place_id = $request['place']['id'];
+
+        $updatedActivity->save();
+        return response()->json(
+            [
+                'message' => 'Success'
+            ],
+            200
+        );
     }
 
     /**
