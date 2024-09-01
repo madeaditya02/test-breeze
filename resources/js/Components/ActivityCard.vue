@@ -38,7 +38,7 @@ const rating = ref()
 <template>
   <div class="px-6 py-5 border rounded-xl flex md:items-center gap-3 sm:gap-4 lg:gap-7 mt-4 flex-col md:flex-row">
     <img v-if="isActive" :src="placePhoto(activity.photo)" alt=""
-      class="md:w-[160px] w-full h-[120px] object-cover rounded-xl">
+      class="md:w-[160px] w-full h-[160px] md:h-[120px] object-cover rounded-xl">
     <div class="flex-grow">
       <div class="flex justify-between">
         <h3 class="text-xl font-semibold">{{ activity.name }}</h3>

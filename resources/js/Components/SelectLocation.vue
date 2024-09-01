@@ -155,7 +155,7 @@ async function getAI() {
       </Tabs>
     </div>
     <template #footer>
-      <Button :disabled="!Object.keys(selectedPlace).length" class="ml-[18px]" label="Select Location"
+      <Button :disabled="!Object.keys(selectedPlace).length" class="ml-[18px] mt-4" label="Select Location"
         @click="submit" />
     </template>
   </Dialog>

@@ -21,23 +21,28 @@ async function search(event) {
 }
 const toast = useToast();
 async function inviteUser() {
-  const res = await axios.post(`/dashboard/plans/${props.plan.public_id}/invite`, { user: selectedUser.value.id });
+  if (!selectedUser.value) return
+  loading.value = true
+  const res = await axios.post(`/dashboard/plans/${props.plan?.public_id}/invite`, { user: selectedUser.value.id });
   if (res.status == 200)
     toast.add({ severity: 'success', summary: 'Invite Friend', detail: 'Invitation successfully sended', life: 4000 });
   selectedUser.value = null
+  loading.value = false
 }
 
 const onlineUsers = computed(() => props.onlineUsers ? props.onlineUsers.map(user => user.id) : [])
 const isOwner = computed(() => {
-  return props.plan.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
+  return props.plan?.users.filter(user => user.pivot.role == 'Owner')[0].id == auth.user.id
 })
+
+const loading = ref(false)
 </script>
 <template>
   <Toast />
   <Dialog v-model:visible="visible" modal :header="isOwner ? 'Invite Friends' : 'Team Members'"
     :style="{ width: '32rem' }">
     <div class="flex flex-col gap-4 w-full">
-      <div v-if="isOwner">
+      <form v-if="isOwner" @submit.prevent="inviteUser">
         <span class="font-medium block mb-2">Invite Member</span>
         <InputGroup>
           <AutoComplete v-model="selectedUser" optionLabel="email" :suggestions="filteredUsers" @complete="search"
@@ -52,9 +57,16 @@ const isOwner = computed(() => {
               </div>
             </template>
           </AutoComplete>
-          <Button label="Invite" class="" @click="inviteUser"></Button>
+          <Button type="submit" :disabled="loading || !selectedUser">
+            <svg v-if="loading" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6 animate-spin">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            <span v-if="!loading">Invite</span>
+          </Button>
         </InputGroup>
-      </div>
+      </form>
       <div>
         <span class="font-medium block mb-2" v-if="isOwner">Team Members</span>
         <ul class="list-none p-0 m-0 flex flex-col gap-4">

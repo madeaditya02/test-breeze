@@ -12,7 +12,7 @@ defineProps(['currentPlans'])
       clickable: true,
     }">
       <swiper-slide v-for="plan in currentPlans">
-        <current-plan-card @share-plan="$emit('sharePlan', plan.id)" :plan="plan" />
+        <current-plan-card @share-plan="$emit('sharePlan', plan)" :plan="plan" />
       </swiper-slide>
       <swiper-slide></swiper-slide>
     </swiper>

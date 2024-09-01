@@ -163,7 +163,7 @@ const confirmLogout = () => {
         </svg>
       </button>
     </div>
-    <div class="px-8 py-6 lg:px-16 lg:py-12 w-full">
+    <div class="px-6 py-6 lg:px-16 lg:py-12 w-full">
       <slot />
     </div>
   </div>

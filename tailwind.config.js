@@ -23,6 +23,9 @@ export default {
                 "blue-lighter": "#F3FAFB",
                 "blue-dark": "#177AAF",
             },
+            screens: {
+                'xs': '400px'
+            }
         },
     },
 

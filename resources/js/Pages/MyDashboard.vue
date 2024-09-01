@@ -22,8 +22,13 @@ const showModal = ref(false);
 const showNewPlanModal = ref(false);
 
 const showShare = ref(false)
+const sharedPlan = ref()
 console.log(props.plans);
-
+function share(plan) {
+  showShare.value = true
+  sharedPlan.value = plan
+}
+watch(showShare, val => !val ? sharedPlan.value = null : null)
 </script>
 <template>
   <h1 class="text-3xl font-semibold mb-5">My Plans</h1>
@@ -31,7 +36,7 @@ console.log(props.plans);
     Add New Plan
   </PlusButton>
 
-  <CurrentPlans :current-plans="plans" @share-plan="showShare = true" />
+  <CurrentPlans :current-plans="plans" @share-plan="plan => share(plan)" />
 
   <h1 class="text-3xl font-semibold mb-5 mt-12">Recommended for You</h1>
   <FeaturedPlaces :count="5" :count-many="12" :provinces="provinces" />
@@ -71,7 +76,7 @@ console.log(props.plans);
   <ExistingPlanModal v-model:show="showModal" />
   <NewPlanModal v-model:show="showNewPlanModal" />
 
-  <ShareDialog v-if="plans.length > 0" v-model:visible="showShare" :plan="plans[0]" />
+  <ShareDialog v-if="plans.length > 0" v-model:visible="showShare" :plan="sharedPlan" />
 </template>
 <style>
 .recommendations .swiper-slide {

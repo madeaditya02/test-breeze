@@ -26,7 +26,7 @@ const currentActivities = computed(() => {
     <img :src="placePhoto(currentActivities[0].place.photo)" alt="" class="w-[250px] h-[170px] rounded-xl object-cover">
     </Link>
     <div class="flex-grow grid grid-cols-1 md:grid-cols-[auto_min-content] h-fit">
-      <div class="flex items-start gap-4">
+      <div class="flex items-start justify-between gap-4">
         <Link :href="`/dashboard/plans/${plan.public_id}`" class="text-2xl font-semibold hover:underline">{{ plan.name
         }}</Link>
         <button @click="showPlanAction" class="sm:hidden">
@@ -61,7 +61,8 @@ const currentActivities = computed(() => {
         <div
           class="grid grid-cols-[min-content_auto] md:grid-cols-[min-content_auto_16px_auto] gap-x-3 gap-y-1 md:gap-y-2 mt-4 items-center">
           <template v-for="activity in currentActivities">
-            <div class="w-[10px] h-[10px] rounded-full bg-[#73E77F]"></div>
+            <div class="w-[10px] h-[10px] rounded-full"
+              :class="moment.utc(activity.time).isSame(moment.utc(), 'day') ? 'bg-[#73E77F]' : 'bg-[#FAFD7B]'"></div>
             <div class="flex gap-2 items-center">
               <div>{{ activity.place.name }}</div>
             </div>

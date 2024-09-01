@@ -18,9 +18,9 @@ defineProps(['place', 'class'])
 const emit = defineEmits(['click'])
 </script>
 <template>
-  <div class="py-4 border-b flex gap-4" :class="class" @click="$emit('click')">
+  <div class="py-4 border-b flex gap-4 flex-col xs:flex-row" :class="class" @click="$emit('click')">
     <img v-if="place.photos" :src="placePhoto(place.photos[0].name)" alt=""
-      class="!w-[160px] h-[120px] object-cover rounded-xl">
+      class="w-full xs:!w-[160px] h-[160px] xs:h-[120px] object-cover rounded-xl">
     <div class="flex-grow">
       <h3 class="text-xl font-semibold">{{ place.displayName.text }}</h3>
       <div class="flex items-center gap-2 mt-1" v-if="place.rating">

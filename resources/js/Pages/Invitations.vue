@@ -28,7 +28,7 @@ const props = defineProps(['notifications'])
         </div>
       </div>
     </div>
-    <PlusButton v-if="!notification.read_at" :as-link="`/dashboard/plans/${notification.data.plan_id}/join`"
+    <PlusButton v-if="!notification.read_at" :as-link="`/dashboard/plans/${notification.plan.public_id}/join`"
       class="w-fit">Accept</PlusButton>
   </div>
   <h5 v-if="!notifications?.length" class="text-xl text-gray-600 mt-8">No invitations have been received yet</h5>

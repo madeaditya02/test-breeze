@@ -7,7 +7,7 @@ import DeletePlanButton from './DeletePlanButton.vue';
 import PrimaryButton from './PrimaryButton.vue';
 import { computed } from 'vue';
 import moment from 'moment';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { humanizeFromNow, planStatus, rangePlan } from '@/util';
 
 defineEmits(['sharePlan', 'delete']);
@@ -45,8 +45,9 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
         <div class="grid gap-x-5 gap-y-3 mt-4 items-center" style="grid-template-columns: auto auto;">
           <template v-for="activity in currentActivities">
             <div class="flex gap-2 items-center">
-              <div class="w-[10px] h-[10px] rounded-full bg-[#FAFD7B]"></div>
-              <div>{{ activity.activity }}</div>
+              <div class="w-[10px] h-[10px] rounded-full"
+                :class="moment.utc(activity.time).isSame(moment.utc(), 'day') ? 'bg-[#73E77F]' : 'bg-[#FAFD7B]'"></div>
+              <div>{{ activity.place.name }}</div>
             </div>
             <div>{{ moment.utc(activity.time).local().format('HH:mm') }}, {{ humanizeFromNow(activity.time) }}</div>
           </template>
@@ -62,7 +63,8 @@ const currentActivities = computed(() => plan.activities.filter(act => moment.ut
       <div class="flex gap-3 pt-2 border-t mt-3 md:pt-0 md:border-0 md:mt-0">
         <pencil-square-icon-button :as-link="`/dashboard/plans/${plan.public_id}`" />
         <share-icon-button v-if="planStatus(plan) != 'Completed'" @share="$emit('sharePlan')" />
-        <DeletePlanButton @delete="$emit('delete')" />
+        <DeletePlanButton @delete="$emit('delete')"
+          v-if="plan.users.filter(user => user.id == $page.props.auth.user.id)[0].pivot.role == 'Owner'" />
       </div>
       <!-- <PrimaryButton class="mt-2.5">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

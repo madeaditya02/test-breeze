@@ -17,7 +17,8 @@ import { Loader } from '@googlemaps/js-api-loader';
 
 //   },
 // };
-const { places } = defineProps(['class', 'places'])
+const props = defineProps(['class', 'places'])
+const { places } = props
 console.log(places);
 
 const mapRef = ref(null);
@@ -101,8 +102,10 @@ onMounted(() => {
   initMap();
 });
 
-watch(() => places, () => {
-  initMap()
+watch(() => props.places, () => {
+  // console.log('updated');
+  // initMap()
+  // google.maps.event.trigger(map, 'resize');
 })
 
 // return {

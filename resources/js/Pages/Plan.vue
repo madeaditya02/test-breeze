@@ -41,6 +41,7 @@ const getActivity = () => {
   return axios.get(`/dashboard/activities/${plan.value.public_id}`)
     .then((res) => {
       planActivity.value = res.data;
+      plan.value.activities = res.data
     })
     .catch((err) => {
       console.log(err);
@@ -261,7 +262,8 @@ async function editSubmitted() {
       <!-- Form Add Activity -->
       <form class="px-6 py-5 border rounded-xl mt-4" v-if="showAddPlan" @submit.prevent="submitActivity">
         <div class="flex gap-5 items-center">
-          <div class="flex gap-2.5" :class="newActivity.place ? 'flex-col w-full' : 'items-center'">
+          <div class="flex flex-col sm:flex-row gap-2.5"
+            :class="newActivity.place ? 'sm:!flex-col w-full' : 'sm:items-center'">
             <div class="flex gap-2.5 items-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">
@@ -286,7 +288,8 @@ async function editSubmitted() {
           </div>
         </div>
         <div class="flex gap-2.5 mt-3 items-center">
-          <Button type="submit" :disabled="loadingAdd" class="!py-1 text-sm !rounded-md">
+          <Button type="submit" :disabled="loadingAdd || !newActivity.time || !newActivity.place"
+            class="!py-1 text-sm !rounded-md">
             <svg v-if="loadingAdd" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="size-5 inline animate-spin">
               <path stroke-linecap="round" stroke-linejoin="round"
