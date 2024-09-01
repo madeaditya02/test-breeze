@@ -150,13 +150,14 @@ async function deleteActivity(id) {
 }
 
 async function deletePlan() {
-  await axios.delete(`/dashboard/plan/${plan.value.id}`)
-    .then(function () {
-      router.visit('/dashboard/plans');
-    })
-    .catch(function (err) {
-      console.log(err);
-    })
+  // axios.delete(`/dashboard/plan/${plan.value.id}`)
+  //   .then(function () {
+  //     router.visit('/dashboard/plans');
+  //   })
+  //   .catch(function (err) {
+  //     console.log(err);
+  //   })
+  router.delete(`/dashboard/plan/${plan.value.id}`)
 }
 
 function deletePlanConfirm() {

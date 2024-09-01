@@ -17,6 +17,7 @@ defineProps(['currentPlans'])
       <swiper-slide></swiper-slide>
     </swiper>
   </div>
+  <h5 v-if="!currentPlans?.length" class="text-xl text-gray-600">No current plan yet</h5>
 </template>
 <style>
 .swiper {
